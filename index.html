@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WARAQ مساعد ورق</title>
+<style>
+:root{--bg:#EDE8DE;--sf:#F8F5EE;--tx:#0F2D2A;--mu:#556661;--pr:#0F2D2A;--on:#EDE8DE;--se:#5F8F7E;--ac:#F29966;--bd:#d6cfc0;--dn:#b42318;--lg:#0F2D2A;--lp:#F8F5EE;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1F1D;--sf:#12302c;--tx:#EDE8DE;--mu:#9bb0aa;--pr:#5F8F7E;--on:#0B1F1D;--bd:#23413c;--dn:#ff8a80;--lg:#EDE8DE;--lp:#12302c;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B1F1D;--sf:#12302c;--tx:#EDE8DE;--mu:#9bb0aa;--pr:#5F8F7E;--on:#0B1F1D;--bd:#23413c;--dn:#ff8a80;--lg:#EDE8DE;--lp:#12302c;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 "Segoe UI",Tahoma,"Noto Sans Arabic",system-ui,sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:16px 16px 96px}
+h2{font-size:1.35rem;margin:8px 0 14px}
+.hero{display:flex;align-items:center;gap:12px;direction:ltr;justify-content:center;margin-top:8px}
+.wm{font:800 2rem/1 "Segoe UI",Arial,sans-serif;letter-spacing:.02em}
+.wa{font-weight:700;font-size:1.15rem;direction:rtl}
+.tag{text-align:center;color:var(--mu);margin:6px 0 18px;font-size:.9rem}
+.ask{display:flex;align-items:center;justify-content:space-between;width:100%;background:var(--sf);border:1px solid var(--bd);border-radius:999px;padding:6px 18px 6px 6px;color:var(--mu);font:inherit;cursor:pointer;margin-bottom:16px;flex-direction:row}
+.ask span{padding-inline-start:12px}
+.ask i{width:40px;height:40px;border-radius:50%;background:var(--sf);border:1px solid var(--bd);display:grid;place-items:center;color:var(--ac)}
+.cards{display:grid;gap:8px}
+.card{display:flex;align-items:center;gap:12px;background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:12px;font:inherit;color:inherit;text-align:start;cursor:pointer;width:100%}
+.card .ico{width:40px;height:40px;border-radius:10px;background:var(--bg);display:grid;place-items:center;color:var(--pr);flex:none}
+.card.hl{border-color:var(--ac)}
+.card.hl .ico{color:var(--ac)}
+.card b{display:block}
+.card small{color:var(--mu)}
+.add{display:flex;flex-wrap:wrap;gap:8px;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:14px}
+.add>*{flex:1 1 130px;min-width:0}
+input,select{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:9px}
+button.go{background:var(--pr);color:var(--on);border:0;border-radius:8px;font:inherit;font-weight:700;padding:9px 14px;cursor:pointer}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.row{display:flex;align-items:center;gap:12px;background:var(--sf);border:1px solid var(--bd);border-inline-start:6px solid var(--c,var(--se));border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.row .b{flex:1;min-width:0}
+.row b{display:block}
+.row small,.sec{color:var(--mu)}
+.x{background:none;border:0;color:var(--dn);font-size:1.3rem;cursor:pointer;padding:4px 8px}
+.day{margin:16px 0 6px;font-weight:700}
+.sec{margin:18px 0 6px;font-size:.9rem}
+.cd{min-width:56px;text-align:center;font-size:1.6rem;font-weight:700;line-height:1.1;color:var(--ac)}
+.cd small{display:block;font-size:.75rem;font-weight:400;color:var(--mu)}
+.done b{text-decoration:line-through;color:var(--mu)}
+.empty{color:var(--mu);text-align:center;padding:24px 0}
+input[type=checkbox]{width:22px;height:22px;accent-color:var(--se);flex:none}
+.seg{display:flex;background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:3px;margin-bottom:14px}
+.seg button{flex:1;border:0;background:none;color:var(--mu);font:inherit;padding:8px;border-radius:8px;cursor:pointer}
+.seg button.on{background:var(--pr);color:var(--on);font-weight:700}
+.bub{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:12px;margin-bottom:12px}
+.note{color:var(--mu);font-size:.8rem;text-align:center;margin-top:24px}
+nav{position:fixed;inset:auto 0 0 0;background:var(--sf);border-top:1px solid var(--bd);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+nav button{flex:1;background:none;border:0;border-top:3px solid transparent;color:var(--mu);font:inherit;font-size:.72rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;cursor:pointer}
+nav button.on{color:var(--pr);border-color:var(--ac);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap" id="main"></div>
+<nav id="nav" aria-label="التنقل"></nav>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9/dist/umd/supabase.js"></script>
+<script>
+/* ===== إعدادات Supabase: الصق هنا رابط المشروع والمفتاح العام (anon) ===== */
+const SUPABASE_URL='https://qilbqomdeximgdxwnxdy.supabase.co';
+const SUPABASE_KEY='sb_publishable_i_R78zng5q1drR4kN1dkTg_NtVfIFcV';
+const DAYS=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+const COLORS=['#2f6f62','#F29966','#7a6a4f','#3f6b8a','#a85a5a','#6b5b95','#5F8F7E'];
+const IC={home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 1 2-2h13',cal:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',chat:'M4 5h16v11H9l-5 4z',more:'M5 12h.01M12 12h.01M19 12h.01',spark:'M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z',doc:'M6 3h12v18H6zM9 8h6M9 12h6',chk:'M5 12l4 4 10-10'};
+const ic=(k,w)=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="${w||1.8}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${IC[k]}"/></svg>`;
+const logo=n=>`<svg viewBox="0 0 64 64" width="${n}" height="${n}" aria-hidden="true"><path d="M36 10l16 6v34l-16 4z" fill="var(--lp)" stroke="var(--bd)" stroke-width="2" stroke-linejoin="round"/><path d="M7 14l19 14v22L7 38z" fill="var(--lg)" stroke="var(--lg)" stroke-width="4" stroke-linejoin="round"/><path d="M28 18l16-6v36l-16 8z" fill="var(--se)" stroke="var(--se)" stroke-width="4" stroke-linejoin="round"/></svg>`;
+const NAV=[['home','الرئيسية','home'],['subjects','المواد','book'],['lectures','الجدول','cal'],['assistant','المساعد','chat'],['more','المزيد','more']];
+const TITLES={subjects:'المواد',lectures:'الجدول الدراسي',assistant:'المساعد الذكي',more:'المزيد'};
+let S={subjects:[],lectures:[],exams:[],tasks:[]},tab='home',mt='exams';
+try{const r=localStorage.getItem('planner_v1');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const persist=()=>{try{localStorage.setItem('planner_v1',JSON.stringify(S))}catch(e){}};
+const save=()=>{S._t=Date.now();persist();push()};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const $=s=>document.querySelector(s);
+const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sub=id=>S.subjects.find(s=>s.id===id);
+const sname=id=>sub(id)?esc(sub(id).name):'بدون مادة';
+const scol=id=>sub(id)?sub(id).color:'var(--se)';
+const opts=b=>(b?'<option value="">بدون مادة</option>':'')+S.subjects.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+const v=id=>($('#'+id)||{}).value||'';
+const go=(t,m)=>{tab=t;if(m)mt=m;render();scrollTo(0,0)};
+const t0=()=>new Date().setHours(0,0,0,0);
+const left=d=>Math.round((new Date(d+'T00:00')-t0())/864e5);
+function add(k){
+ if(k==='subjects'){const n=v('f1').trim();if(!n)return;S.subjects.push({id:uid(),name:n,doctor:v('f2').trim(),color:COLORS[S.subjects.length%COLORS.length]})}
+ if(k==='lectures'){if(!v('f1')||!v('f3')||!v('f4'))return;S.lectures.push({id:uid(),subjectId:v('f1'),day:+v('f2'),start:v('f3'),end:v('f4'),room:v('f5').trim()})}
+ if(k==='exams'){if(!v('f1')||!v('f2'))return;S.exams.push({id:uid(),subjectId:v('f1'),date:v('f2'),time:v('f3'),kind:v('f4').trim()})}
+ if(k==='tasks'){const t=v('f2').trim();if(!t)return;S.tasks.push({id:uid(),subjectId:v('f1'),title:t,due:v('f3'),done:false})}
+ save();render()
+}
+function del(k,id){S[k]=S[k].filter(x=>x.id!==id);if(k==='subjects')['lectures','exams','tasks'].forEach(c=>S[c]=S[c].filter(x=>x.subjectId!==id));save();render()}
+function tog(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();render()}}
+const xb=(k,id)=>`<button class="x" aria-label="حذف" onclick="del('${k}','${id}')">×</button>`;
+const empty=m=>`<p class="empty">${m}</p>`;
+const needSub=empty('أضف مادة أولاً من تبويب «المواد».');
+const lecRow=l=>`<div class="row" style="--c:${scol(l.subjectId)}"><div class="b"><b>${sname(l.subjectId)}</b><small>${esc(l.start)} – ${esc(l.end)}${l.room?' — القاعة '+esc(l.room):''}</small></div>${xb('lectures',l.id)}</div>`;
+const byStart=(a,b)=>a.start.localeCompare(b.start);
+const card=(t,m,i,ti,d,hl)=>`<button class="card${hl?' hl':''}" onclick="go('${t}'${m?",'"+m+"'":''})"><span class="ico">${ic(i)}</span><span><b>${ti}</b><small>${d}</small></span></button>`;
+function vHome(){
+ const di=(new Date().getDay()+1)%7,tl=S.lectures.filter(l=>l.day===di).sort(byStart);
+ const nx=S.exams.map(e=>({e,d:left(e.date)})).filter(x=>x.d>=0).sort((a,b)=>a.d-b.d)[0];
+ const ot=S.tasks.filter(t=>!t.done).length;
+ let h=`<div class="hero">${logo(60)}<div><div class="wm">WARAQ</div><div class="wa">مساعد ورق</div></div></div><p class="tag">كل ما تحتاجه .. في مكان واحد</p>
+<button class="ask" onclick="go('assistant')"><span>ما الذي تحتاجه اليوم؟</span><i>${ic('spark')}</i></button><div class="cards">`;
+ h+=card('lectures','','cal','الجدول الدراسي',tl.length?`${tl.length} محاضرات اليوم`:'لا محاضرات اليوم');
+ h+=card('more','exams','doc','الامتحانات',nx?`${sname(nx.e.subjectId)}: ${nx.d?'بعد '+nx.d+' يوم':'اليوم'}`:'لا امتحانات قادمة',nx&&nx.d<=3);
+ h+=card('more','tasks','chk','المهام والواجبات',`${ot} مهام مفتوحة`);
+ h+=card('assistant','','chat','المساعد الذكي','اسأل .. واحصل على إجابات (قريباً)')+'</div>';
+ if(tl.length)h+=`<div class="sec">محاضرات اليوم</div>`+tl.map(lecRow).join('');
+ return h+'<p class="note">البيانات محفوظة في متصفحك فقط على هذا الجهاز.</p>'
+}
+function vSubjects(){
+ const h=`<div class="add"><input id="f1" placeholder="اسم المادة"><input id="f2" placeholder="اسم الدكتور (اختياري)"><button class="go" onclick="add('subjects')">إضافة المادة</button></div>`;
+ return h+(S.subjects.length?S.subjects.map(s=>`<div class="row" style="--c:${s.color}"><div class="b"><b>${esc(s.name)}</b><small>${esc(s.doctor)||'بدون دكتور'} — ${S.lectures.filter(l=>l.subjectId===s.id).length} محاضرات، ${S.exams.filter(e=>e.subjectId===s.id).length} امتحانات، ${S.tasks.filter(t=>t.subjectId===s.id&&!t.done).length} مهام مفتوحة</small></div>${xb('subjects',s.id)}</div>`).join(''):empty('ما عندك مواد بعد. أضف أول مادة.'))
+}
+function vLectures(){
+ if(!S.subjects.length)return needSub;
+ let h=`<div class="add"><select id="f1">${opts()}</select><select id="f2">${DAYS.map((d,i)=>`<option value="${i}">${d}</option>`).join('')}</select><input id="f3" type="time" aria-label="من"><input id="f4" type="time" aria-label="إلى"><input id="f5" placeholder="القاعة"><button class="go" onclick="add('lectures')">إضافة المحاضرة</button></div>`,any=false;
+ DAYS.forEach((d,i)=>{const L=S.lectures.filter(l=>l.day===i).sort(byStart);if(!L.length)return;any=true;h+=`<div class="day">${d}</div>`+L.map(lecRow).join('')});
+ return h+(any?'':empty('ما أضفت محاضرات بعد.'))
+}
+function vExams(){
+ if(!S.subjects.length)return needSub;
+ const h=`<div class="add"><select id="f1">${opts()}</select><input id="f2" type="date" aria-label="التاريخ"><input id="f3" type="time" aria-label="الوقت"><input id="f4" placeholder="النوع (شهري، نهائي…)"><button class="go" onclick="add('exams')">إضافة الامتحان</button></div>`;
+ return h+(S.exams.length?[...S.exams].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>{const d=left(e.date);
+  const c=d<0?'<div class="cd">—<small>انتهى</small></div>':d===0?'<div class="cd">اليوم</div>':`<div class="cd">${d}<small>يوم</small></div>`;
+  return `<div class="row" style="--c:${scol(e.subjectId)}">${c}<div class="b"><b>${sname(e.subjectId)}${e.kind?' — '+esc(e.kind):''}</b><small>${esc(e.date)}${e.time?' — '+esc(e.time):''}</small></div>${xb('exams',e.id)}</div>`}).join(''):empty('ما أضفت امتحانات بعد.'))
+}
+function vTasks(){
+ const h=`<div class="add"><select id="f1">${opts(true)}</select><input id="f2" placeholder="المهمة أو الواجب"><input id="f3" type="date" aria-label="الموعد"><button class="go" onclick="add('tasks')">إضافة المهمة</button></div>`;
+ const T=[...S.tasks].sort((a,b)=>(a.done-b.done)||(a.due||'9').localeCompare(b.due||'9'));
+ return h+(T.length?T.map(t=>`<div class="row${t.done?' done':''}" style="--c:${scol(t.subjectId)}"><input type="checkbox" aria-label="تم" ${t.done?'checked':''} onchange="tog('${t.id}')"><div class="b"><b>${esc(t.title)}</b><small>${sname(t.subjectId)}${t.due?' — '+esc(t.due):''}</small></div>${xb('tasks',t.id)}</div>`).join(''):empty('ما عندك مهام. استمتع!'))
+}
+const vAssist=()=>`<div class="bub">أهلاً! أنا مساعد ورق. قريباً أجاوبك من جدولك وامتحاناتك وملازم كل مادة، ولكل مادة محادثتها الخاصة.</div><div class="add"><input placeholder="اكتب سؤالك…" disabled><button class="go" disabled>إرسال</button></div><p class="note">المساعد هو المرحلة القادمة من البناء.</p>`;
+const vMore=()=>`<div class="seg">${[['exams','الامتحانات'],['tasks','المهام'],['account','الحساب']].map(m=>`<button class="${mt===m[0]?'on':''}" onclick="go('more','${m[0]}')">${m[1]}</button>`).join('')}</div>`+(mt==='exams'?vExams():mt==='tasks'?vTasks():vAccount());
+/* ===== الحساب والمزامنة ===== */
+const BASE=()=>({subjects:[],lectures:[],exams:[],tasks:[]});
+const sb=(SUPABASE_URL&&SUPABASE_KEY&&window.supabase)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+let user=null,msg='',timer=null;
+const setMsg=m=>{msg=m;const e=$('#st');if(e)e.textContent=m};
+const has=o=>['subjects','lectures','exams','tasks'].some(k=>(o[k]||[]).length);
+function merge(a,b){const o=BASE();for(const k in o){const ids=new Set((a[k]||[]).map(x=>x.id));o[k]=[...(a[k]||[]),...(b[k]||[]).filter(x=>!ids.has(x.id))]}return o}
+function vAccount(){
+ if(!sb)return `<div class="bub">تسجيل الدخول غير مفعّل بعد. ضع رابط مشروع Supabase والمفتاح العام في أول السكربت (SUPABASE_URL و SUPABASE_KEY) ثم ارفع الصفحة على استضافتك.</div>`;
+ const st=`<p class="sec" id="st" role="status">${esc(msg)}</p>`;
+ if(user)return `<div class="bub">مسجّل بحساب:<br><b>${esc(user.email)}</b><br><small class="sec">عند تسجيل الخروج تُمسح بيانات هذا الجهاز وتبقى محفوظة في حسابك.</small></div><div class="add"><button class="go" onclick="pull()">مزامنة الآن</button><button class="go" onclick="logout()">تسجيل الخروج</button></div>${st}`;
+ return `<div class="add"><input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr"><input id="pw" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="current-password" dir="ltr"><button class="go" onclick="auth('in')">تسجيل الدخول</button><button class="go" onclick="auth('up')">إنشاء حساب</button></div>${st}`;
+}
+async function auth(k){
+ const email=v('em').trim(),password=v('pw');
+ if(!email||password.length<6)return setMsg('أدخل بريداً صحيحاً وكلمة مرور من 6 أحرف على الأقل.');
+ setMsg('جارٍ التنفيذ…');
+ const r=k==='up'?await sb.auth.signUp({email,password}):await sb.auth.signInWithPassword({email,password});
+ if(r.error)return setMsg('تعذّر الإجراء: '+r.error.message);
+ if(k==='up'&&!r.data.session)setMsg('تم إنشاء الحساب. أكّد بريدك من الرابط المرسل ثم سجّل الدخول.');
+}
+async function upload(){
+ if(!sb||!user)return null;
+ const r=await sb.from('user_data').upsert({user_id:user.id,data:S,updated_at:new Date().toISOString()});
+ setMsg(r.error?'تعذّر الرفع: '+r.error.message:'تمت المزامنة.');
+ return r.error
+}
+function push(){if(!sb||!user)return;clearTimeout(timer);timer=setTimeout(upload,800)}
+async function pull(){
+ if(!sb||!user)return;
+ const r=await sb.from('user_data').select('data').eq('user_id',user.id).maybeSingle();
+ if(r.error)return setMsg('تعذّرت المزامنة: '+r.error.message);
+ const rd=r.data&&r.data.data;
+ if(!rd){S._u=user.id;persist();return upload()}
+ if(S._u!==user.id&&has(S)){S=Object.assign(BASE(),merge(rd,S),{_u:user.id});save();return setMsg('تم دمج بيانات هذا الجهاز مع حسابك.')}
+ const rt=rd._t||0,lt=S._t||0;
+ if(rt>lt||S._u!==user.id){S=Object.assign(BASE(),rd,{_u:user.id});persist();render();setMsg('تمت المزامنة.')}
+ else if(lt>rt)upload();
+ else setMsg('تمت المزامنة.')
+}
+async function logout(){
+ if(await upload())return;
+ await sb.auth.signOut();S=Object.assign(BASE(),{_t:0});persist();render()
+}
+function initAuth(){
+ if(!sb)return;
+ sb.auth.onAuthStateChange((e,s)=>{user=s?s.user:null;setTimeout(()=>{render();if(user)pull()},0)});
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)pull()})
+}
+function render(){
+ $('#nav').innerHTML=NAV.map(n=>`<button class="${n[0]===tab?'on':''}" onclick="go('${n[0]}')">${ic(n[2],n[0]==='more'?3:1.8)}${n[1]}</button>`).join('');
+ const V={home:vHome,subjects:vSubjects,lectures:vLectures,assistant:vAssist,more:vMore};
+ $('#main').innerHTML=(tab==='home'?'':`<h2>${TITLES[tab]}</h2>`)+V[tab]();
+}
+render();initAuth();
+</script>
+</body>
+</html>
