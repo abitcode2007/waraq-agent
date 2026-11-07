@@ -49,12 +49,6 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--se);flex:none}
 .seg button.on{background:var(--pr);color:var(--on);font-weight:700}
 .bub{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:12px;margin-bottom:12px}
 .note{color:var(--mu);font-size:.8rem;text-align:center;margin-top:24px}
-.chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px}
-.chips button{white-space:nowrap;border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:999px;padding:6px 14px;font:inherit;cursor:pointer}
-.chips button.on{background:var(--pr);color:var(--on);border-color:var(--pr)}
-.m{max-width:85%;padding:9px 12px;border-radius:14px;margin-bottom:8px;white-space:pre-wrap;overflow-wrap:anywhere}
-.m.u{background:var(--pr);color:var(--on);margin-inline-end:auto}
-.m.a{background:var(--sf);border:1px solid var(--bd);margin-inline-start:auto}
 nav{position:fixed;inset:auto 0 0 0;background:var(--sf);border-top:1px solid var(--bd);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
 nav button{flex:1;background:none;border:0;border-top:3px solid transparent;color:var(--mu);font:inherit;font-size:.72rem;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;cursor:pointer}
 nav button.on{color:var(--pr);border-color:var(--ac);font-weight:700}
@@ -66,8 +60,8 @@ nav button.on{color:var(--pr);border-color:var(--ac);font-weight:700}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9/dist/umd/supabase.js"></script>
 <script>
 /* ===== إعدادات Supabase: الصق هنا رابط المشروع والمفتاح العام (anon) ===== */
-const SUPABASE_URL='https://qilbqomdeximgdxwnxdy.supabase.co';
-const SUPABASE_KEY='sb_publishable_i_R78zng5q1drR4kN1dkTg_NtVfIFcV';
+const SUPABASE_URL='';
+const SUPABASE_KEY='';
 const DAYS=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
 const COLORS=['#2f6f62','#F29966','#7a6a4f','#3f6b8a','#a85a5a','#6b5b95','#5F8F7E'];
 const IC={home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 1 2-2h13',cal:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',chat:'M4 5h16v11H9l-5 4z',more:'M5 12h.01M12 12h.01M19 12h.01',spark:'M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z',doc:'M6 3h12v18H6zM9 8h6M9 12h6',chk:'M5 12l4 4 10-10'};
@@ -75,9 +69,8 @@ const ic=(k,w)=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" str
 const logo=n=>`<svg viewBox="0 0 64 64" width="${n}" height="${n}" aria-hidden="true"><path d="M36 10l16 6v34l-16 4z" fill="var(--lp)" stroke="var(--bd)" stroke-width="2" stroke-linejoin="round"/><path d="M7 14l19 14v22L7 38z" fill="var(--lg)" stroke="var(--lg)" stroke-width="4" stroke-linejoin="round"/><path d="M28 18l16-6v36l-16 8z" fill="var(--se)" stroke="var(--se)" stroke-width="4" stroke-linejoin="round"/></svg>`;
 const NAV=[['home','الرئيسية','home'],['subjects','المواد','book'],['lectures','الجدول','cal'],['assistant','المساعد','chat'],['more','المزيد','more']];
 const TITLES={subjects:'المواد',lectures:'الجدول الدراسي',assistant:'المساعد الذكي',more:'المزيد'};
-let S={subjects:[],lectures:[],exams:[],tasks:[],chats:{}},tab='home',mt='exams';
+let S={subjects:[],lectures:[],exams:[],tasks:[]},tab='home',mt='exams';
 try{const r=localStorage.getItem('planner_v1');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
-S.chats=S.chats||{};
 const persist=()=>{try{localStorage.setItem('planner_v1',JSON.stringify(S))}catch(e){}};
 const save=()=>{S._t=Date.now();persist();push()};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -98,7 +91,7 @@ function add(k){
  if(k==='tasks'){const t=v('f2').trim();if(!t)return;S.tasks.push({id:uid(),subjectId:v('f1'),title:t,due:v('f3'),done:false})}
  save();render()
 }
-function del(k,id){S[k]=S[k].filter(x=>x.id!==id);if(k==='subjects'){['lectures','exams','tasks'].forEach(c=>S[c]=S[c].filter(x=>x.subjectId!==id));delete S.chats[id]}save();render()}
+function del(k,id){S[k]=S[k].filter(x=>x.id!==id);if(k==='subjects')['lectures','exams','tasks'].forEach(c=>S[c]=S[c].filter(x=>x.subjectId!==id));save();render()}
 function tog(id){const t=S.tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();render()}}
 const xb=(k,id)=>`<button class="x" aria-label="حذف" onclick="del('${k}','${id}')">×</button>`;
 const empty=m=>`<p class="empty">${m}</p>`;
@@ -115,13 +108,13 @@ function vHome(){
  h+=card('lectures','','cal','الجدول الدراسي',tl.length?`${tl.length} محاضرات اليوم`:'لا محاضرات اليوم');
  h+=card('more','exams','doc','الامتحانات',nx?`${sname(nx.e.subjectId)}: ${nx.d?'بعد '+nx.d+' يوم':'اليوم'}`:'لا امتحانات قادمة',nx&&nx.d<=3);
  h+=card('more','tasks','chk','المهام والواجبات',`${ot} مهام مفتوحة`);
- h+=card('assistant','','chat','المساعد الذكي','اسأل وعدّل جدولك بالمحادثة')+'</div>';
+ h+=card('assistant','','chat','المساعد الذكي','اسأل .. واحصل على إجابات (قريباً)')+'</div>';
  if(tl.length)h+=`<div class="sec">محاضرات اليوم</div>`+tl.map(lecRow).join('');
  return h+'<p class="note">البيانات محفوظة في متصفحك فقط على هذا الجهاز.</p>'
 }
 function vSubjects(){
  const h=`<div class="add"><input id="f1" placeholder="اسم المادة"><input id="f2" placeholder="اسم الدكتور (اختياري)"><button class="go" onclick="add('subjects')">إضافة المادة</button></div>`;
- return h+(S.subjects.length?S.subjects.map(s=>`<div class="row" style="--c:${s.color}"><div class="b"><b>${esc(s.name)}</b><small>${esc(s.doctor)||'بدون دكتور'} — ${S.lectures.filter(l=>l.subjectId===s.id).length} محاضرات، ${S.exams.filter(e=>e.subjectId===s.id).length} امتحانات، ${S.tasks.filter(t=>t.subjectId===s.id&&!t.done).length} مهام مفتوحة</small></div><button class="x" style="color:var(--pr);font-size:.85rem" onclick="openChat('${s.id}')">محادثة</button>${xb('subjects',s.id)}</div>`).join(''):empty('ما عندك مواد بعد. أضف أول مادة.'))
+ return h+(S.subjects.length?S.subjects.map(s=>`<div class="row" style="--c:${s.color}"><div class="b"><b>${esc(s.name)}</b><small>${esc(s.doctor)||'بدون دكتور'} — ${S.lectures.filter(l=>l.subjectId===s.id).length} محاضرات، ${S.exams.filter(e=>e.subjectId===s.id).length} امتحانات، ${S.tasks.filter(t=>t.subjectId===s.id&&!t.done).length} مهام مفتوحة</small></div>${xb('subjects',s.id)}</div>`).join(''):empty('ما عندك مواد بعد. أضف أول مادة.'))
 }
 function vLectures(){
  if(!S.subjects.length)return needSub;
@@ -141,84 +134,15 @@ function vTasks(){
  const T=[...S.tasks].sort((a,b)=>(a.done-b.done)||(a.due||'9').localeCompare(b.due||'9'));
  return h+(T.length?T.map(t=>`<div class="row${t.done?' done':''}" style="--c:${scol(t.subjectId)}"><input type="checkbox" aria-label="تم" ${t.done?'checked':''} onchange="tog('${t.id}')"><div class="b"><b>${esc(t.title)}</b><small>${sname(t.subjectId)}${t.due?' — '+esc(t.due):''}</small></div>${xb('tasks',t.id)}</div>`).join(''):empty('ما عندك مهام. استمتع!'))
 }
-/* ===== المساعد: Gemini عبر Edge Function باسم chat ===== */
-let ck='general',busyChat=false;
-const chatKey=()=>ck==='general'||sub(ck)?ck:'general';
-const rn=id=>sub(id)?sub(id).name:'';
-const localDay=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
-const snap=()=>({today:localDay(),weekday:DAYS[(new Date().getDay()+1)%7],focus:chatKey()!=='general'?rn(chatKey()):'',data:{
- subjects:S.subjects.map(s=>({id:s.id,name:s.name,doctor:s.doctor})),
- lectures:S.lectures.map(l=>({id:l.id,subject:rn(l.subjectId),day:DAYS[l.day],start:l.start,end:l.end,room:l.room})),
- exams:S.exams.map(e=>({id:e.id,subject:rn(e.subjectId),date:e.date,time:e.time,exam_type:e.kind})),
- tasks:S.tasks.map(t=>({id:t.id,subject:rn(t.subjectId),title:t.title,due:t.due,done:t.done}))}});
-const findSub=n=>{n=(n||'').trim();return n&&(S.subjects.find(s=>s.name===n)||S.subjects.find(s=>s.name.includes(n)||n.includes(s.name)))};
-const TM=/^([01]\d|2[0-3]):[0-5]\d$/,DT=/^\d{4}-\d{2}-\d{2}$/;
-const COL={subject:'subjects',lecture:'lectures',exam:'exams',task:'tasks'};
-function run(n,a){
- const need=(...ks)=>{const m=ks.filter(k=>!a[k]);return m.length?'ينقص: '+m.join('، '):''};
- const subj=()=>{if(!a.subject)return{id:''};const s=findSub(a.subject);return s?{id:s.id}:{err:'المادة غير موجودة: '+a.subject+'. أضفها أولاً.'}};
- let e;
- if(n==='add_subject'){if(e=need('name'))return{error:e};const nm=a.name.trim(),x=S.subjects.find(s=>s.name===nm);if(x)return{ok:true,note:'المادة موجودة مسبقاً',id:x.id};const o={id:uid(),name:nm,doctor:(a.doctor||'').trim(),color:COLORS[S.subjects.length%COLORS.length]};S.subjects.push(o);return{ok:true,id:o.id}}
- if(n==='add_lecture'){if(e=need('subject','day','start','end'))return{error:e};const s=subj();if(s.err)return{error:s.err};const d=DAYS.indexOf(a.day);if(d<0||!TM.test(a.start)||!TM.test(a.end))return{error:'اليوم أو الوقت غير صحيح'};const o={id:uid(),subjectId:s.id,day:d,start:a.start,end:a.end,room:String(a.room||'')};S.lectures.push(o);return{ok:true,id:o.id}}
- if(n==='add_exam'){if(e=need('subject','date'))return{error:e};const s=subj();if(s.err)return{error:s.err};if(!DT.test(a.date))return{error:'التاريخ غير صحيح'};const o={id:uid(),subjectId:s.id,date:a.date,time:TM.test(a.time||'')?a.time:'',kind:a.exam_type||''};S.exams.push(o);return{ok:true,id:o.id}}
- if(n==='add_task'){if(e=need('title'))return{error:e};const s=subj();if(s.err)return{error:s.err};const o={id:uid(),subjectId:s.id,title:a.title,due:DT.test(a.due||'')?a.due:'',done:false};S.tasks.push(o);return{ok:true,id:o.id}}
- if(n==='delete_item'||n==='update_item'){
-  const c=COL[a.item];if(!c||!a.id)return{error:'نوع العنصر أو المعرّف ناقص'};
-  const it=S[c].find(x=>x.id===a.id);if(!it)return{error:'العنصر غير موجود'};
-  if(n==='delete_item'){S[c]=S[c].filter(x=>x.id!==a.id);if(c==='subjects'){['lectures','exams','tasks'].forEach(k=>S[k]=S[k].filter(x=>x.subjectId!==a.id));delete S.chats[a.id]}return{ok:true}}
-  const up={};
-  if(a.subject){const s=findSub(a.subject);if(!s)return{error:'المادة غير موجودة'};up.subjectId=s.id}
-  if(a.day){const d=DAYS.indexOf(a.day);if(d<0)return{error:'اليوم غير صحيح'};up.day=d}
-  for(const k of['start','end','time'])if(a[k]&&!TM.test(a[k]))return{error:'الوقت غير صحيح'};
-  for(const k of['date','due'])if(a[k]&&!DT.test(a[k]))return{error:'التاريخ غير صحيح'};
-  for(const k of['name','doctor','room','title','start','end','time','date','due'])if(a[k]!=null)up[k]=String(a[k]);
-  if(a.exam_type!=null)up.kind=String(a.exam_type);
-  if(typeof a.done==='boolean')up.done=a.done;
-  Object.assign(it,up);return{ok:true}
- }
- return{error:'أداة غير معروفة'}
-}
-const openChat=k=>{ck=k;go('assistant');scrollTo(0,document.body.scrollHeight)};
-function vAssist(){
- const k=chatKey(),H=S.chats[k]||[];
- const chips=[['general','عام'],...S.subjects.map(s=>[s.id,s.name])].map(c=>`<button class="${c[0]===k?'on':''}" onclick="openChat('${c[0]}')">${esc(c[1])}</button>`).join('');
- const msgs=H.length?H.map(m=>`<div class="m ${m.r}">${esc(m.t)}</div>`).join(''):`<div class="bub">أهلاً! أنا مساعد ورق. اسألني عن جدولك وامتحاناتك، أو اطلب مني إضافة وتعديل وحذف المواد والمحاضرات والامتحانات والمهام بكلامك العادي.</div>`;
- return `<div class="chips">${chips}</div>${sb&&user?'':'<div class="bub">سجّل الدخول من «المزيد ← الحساب» لتستخدم المساعد.</div>'}<div>${msgs}${busyChat?'<div class="m a">…</div>':''}</div><div class="add"><input id="q" placeholder="اكتب رسالتك…" onkeydown="if(event.key===\'Enter\')send()"><button class="go" onclick="send()">إرسال</button></div>`
-}
-async function send(){
- const inp=$('#q'),text=(inp&&inp.value||'').trim();
- if(!text||busyChat)return;
- if(!sb||!user)return go('more','account');
- const k=chatKey(),H=S.chats[k]=S.chats[k]||[];
- H.push({r:'u',t:text});busyChat=true;render();scrollTo(0,document.body.scrollHeight);
- let reply='',err='';
- try{
-  const cs=H.filter(m=>!m.e).slice(-20).map(m=>({role:m.r==='u'?'user':'model',parts:[{text:m.t}]}));
-  while(cs.length&&cs[0].role==='model')cs.shift();
-  for(let i=0;i<6;i++){
-   const r=await sb.functions.invoke('chat',{body:{contents:cs,context:snap()}});
-   if(r.error||!r.data)throw new Error(r.error?r.error.message:'لا يوجد رد');
-   if(r.data.error)throw new Error(r.data.error);
-   const c=r.data.content;cs.push(c);
-   const calls=(c.parts||[]).filter(p=>p.functionCall);
-   if(!calls.length){reply=(c.parts||[]).map(p=>p.text||'').join('').trim();break}
-   cs.push({role:'user',parts:calls.map(p=>({functionResponse:{name:p.functionCall.name,response:run(p.functionCall.name,p.functionCall.args||{})}}))});
-   save()
-  }
- }catch(x){err=x.message==='limit'?'وصلت للحد المجاني المؤقت للذكاء الاصطناعي. جرّب بعد دقيقة.':'تعذّر الاتصال بالمساعد: '+x.message}
- busyChat=false;
- H.push(err?{r:'a',t:err,e:1}:{r:'a',t:reply||'تم.'});
- if(H.length>60)H.splice(0,H.length-60);
- save();render();scrollTo(0,document.body.scrollHeight)
-}
+const vAssist=()=>`<div class="bub">أهلاً! أنا مساعد ورق. قريباً أجاوبك من جدولك وامتحاناتك وملازم كل مادة، ولكل مادة محادثتها الخاصة.</div><div class="add"><input placeholder="اكتب سؤالك…" disabled><button class="go" disabled>إرسال</button></div><p class="note">المساعد هو المرحلة القادمة من البناء.</p>`;
 const vMore=()=>`<div class="seg">${[['exams','الامتحانات'],['tasks','المهام'],['account','الحساب']].map(m=>`<button class="${mt===m[0]?'on':''}" onclick="go('more','${m[0]}')">${m[1]}</button>`).join('')}</div>`+(mt==='exams'?vExams():mt==='tasks'?vTasks():vAccount());
 /* ===== الحساب والمزامنة ===== */
-const BASE=()=>({subjects:[],lectures:[],exams:[],tasks:[],chats:{}});
+const BASE=()=>({subjects:[],lectures:[],exams:[],tasks:[]});
 const sb=(SUPABASE_URL&&SUPABASE_KEY&&window.supabase)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
 let user=null,msg='',timer=null;
 const setMsg=m=>{msg=m;const e=$('#st');if(e)e.textContent=m};
 const has=o=>['subjects','lectures','exams','tasks'].some(k=>(o[k]||[]).length);
-function merge(a,b){const o={subjects:[],lectures:[],exams:[],tasks:[]};for(const k in o){const ids=new Set((a[k]||[]).map(x=>x.id));o[k]=[...(a[k]||[]),...(b[k]||[]).filter(x=>!ids.has(x.id))]}return o}
+function merge(a,b){const o=BASE();for(const k in o){const ids=new Set((a[k]||[]).map(x=>x.id));o[k]=[...(a[k]||[]),...(b[k]||[]).filter(x=>!ids.has(x.id))]}return o}
 function vAccount(){
  if(!sb)return `<div class="bub">تسجيل الدخول غير مفعّل بعد. ضع رابط مشروع Supabase والمفتاح العام في أول السكربت (SUPABASE_URL و SUPABASE_KEY) ثم ارفع الصفحة على استضافتك.</div>`;
  const st=`<p class="sec" id="st" role="status">${esc(msg)}</p>`;
@@ -246,7 +170,7 @@ async function pull(){
  if(r.error)return setMsg('تعذّرت المزامنة: '+r.error.message);
  const rd=r.data&&r.data.data;
  if(!rd){S._u=user.id;persist();return upload()}
- if(S._u!==user.id&&has(S)){S=Object.assign(BASE(),merge(rd,S),{chats:Object.assign({},rd.chats,S.chats),_u:user.id});save();return setMsg('تم دمج بيانات هذا الجهاز مع حسابك.')}
+ if(S._u!==user.id&&has(S)){S=Object.assign(BASE(),merge(rd,S),{_u:user.id});save();return setMsg('تم دمج بيانات هذا الجهاز مع حسابك.')}
  const rt=rd._t||0,lt=S._t||0;
  if(rt>lt||S._u!==user.id){S=Object.assign(BASE(),rd,{_u:user.id});persist();render();setMsg('تمت المزامنة.')}
  else if(lt>rt)upload();
