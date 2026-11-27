@@ -68,7 +68,26 @@ create policy "pdfs_delete_own" on storage.objects
   for delete to authenticated
   using (bucket_id = 'pdfs' and (storage.foldername(name))[1] = auth.uid()::text);
 
--- 5) تحديد معدل استخدام المساعد (15 طلب/دقيقة، 200 طلب/يوم)
+-- 5) مقاطع ملفات PDF للبحث الدلالي (الفهرسة تتم في المتصفح بمفتاح المستخدم)
+create table if not exists public.chunks (
+  id bigint generated always as identity primary key,
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  subject_id text not null,
+  file_id text not null,
+  page integer not null,
+  content text not null,
+  embedding text not null,
+  created_at timestamptz not null default now()
+);
+create index if not exists chunks_user_subject_idx on public.chunks (user_id, subject_id);
+alter table public.chunks enable row level security;
+drop policy if exists "chunks_all_own" on public.chunks;
+create policy "chunks_all_own" on public.chunks
+  for all to authenticated
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+-- 6) تحديد معدل استخدام المساعد (15 طلب/دقيقة، 200 طلب/يوم)
 create table if not exists public.chat_usage (
   user_id uuid primary key references auth.users(id) on delete cascade,
   minute_bucket bigint not null,
@@ -113,6 +132,6 @@ grant execute on function public.chat_rate_limit(uuid, integer, integer) to auth
 --     Leaked password protection = ON
 --     CAPTCHA = ON
 --   Project Settings → API → JWT expiry = 3600
---  Edge Function `chat`: Verify JWT = ON
---   أضف السر GEMINI_API_KEY في: Project Settings → Edge Functions → Secrets
+--  المساعد لا يحتاج Edge Function ولا GEMINI_API_KEY: كل مستخدم يدخل مفتاحه في الواجهة.
+--  جدول chunks أعلاه مطلوب لتعمل فهرسة PDF والبحث داخل الملفات.
 -- ============================================================

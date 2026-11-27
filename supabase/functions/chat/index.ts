@@ -1,5 +1,6 @@
-// WARAQ — Edge Function `chat`
-// وكيل آمن بين الواجهة و Gemini. لا يحتفظ بأي مفتاح في المتصفح.
+// WARAQ — Edge Function `chat` (محفوظة للرجوع إليها فقط)
+// لم تعد مستخدمة: الواجهة الآن تتصل بـ Gemini مباشرة بمفتاح يدخله كل مستخدم.
+// لا تحتاج نشرها ولا أسرار GEMINI_API_KEY لتشغيل المساعد الحالي.
 //
 // الأسرار المطلوبة في Supabase → Project Settings → Edge Functions → Secrets:
 //   GEMINI_API_KEY      = مفتاح Google AI Studio

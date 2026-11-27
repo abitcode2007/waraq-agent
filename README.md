@@ -8,8 +8,8 @@
 ```
 index.html                       الواجهة كاملة (HTML + CSS + JS)
 config.js                        رابط Supabase والمفتاح العام (آمن للنشر)
-supabase/schema.sql              الجداول وسياسات RLS و Storage وتحديد المعدل
-supabase/functions/chat/         Edge Function وكيل Gemini
+supabase/schema.sql              الجداول وسياسات RLS و Storage وجدول chunks
+supabase/functions/chat/         Edge Function قديمة (غير مستخدمة بعد تحويل المساعد لمفتاح المستخدم)
 .github/workflows/deploy-function.yml   نشر الدالة تلقائياً
 push.ps1 / رفع التحديث.cmd       رفع التعديلات بضغطة واحدة
 ```
@@ -32,14 +32,9 @@ push.ps1 / رفع التحديث.cmd       رفع التعديلات بضغطة 
    - `Confirm email` و`Secure email change` = ON
    - `Leaked password protection` و`CAPTCHA` = ON
    - مدة صلاحية JWT = 3600 ثانية
-3. أضف السر `GEMINI_API_KEY` في **Project Settings → Edge Functions → Secrets**.
-4. انشر الدالة:
-   ```powershell
-   supabase functions deploy chat
-   ```
-   أو اترك GitHub Action ينشرها عند تعديل مجلد `supabase/functions`.
+3. المساعد لا يحتاج أي سر عندك: كل مستخدم يدخل مفتاح Google AI Studio الخاص به من **المزيد ← الحساب**، والمتصفح يتصل بـ Gemini مباشرة. لا حاجة لنشر دالة `chat` ولا لـ `GEMINI_API_KEY`.
 
-### أسرار GitHub Actions (لنشر الدالة تلقائياً)
+### أسرار GitHub Actions (اختيارية — للدالة القديمة فقط)
 
 في **Settings → Secrets and variables → Actions** أضف:
 
@@ -52,10 +47,12 @@ push.ps1 / رفع التحديث.cmd       رفع التعديلات بضغطة 
 
 ## المساعد الشخصي والذاكرة
 
-- المساعد يحفظ ما تخبره به عنك في `profile.facts` عبر أداتي `remember` / `forget`، ويرسله مع كل طلب في `context.profile`.
-- سياق المستخدم يُرسل إلى Gemini داخل `systemInstruction`، لذلك يعرف اسمك وتفضيلاتك وبياناتك أثناء المحادثة.
-- المعلومات تُحفظ محلياً وتُزامن مع حسابك في `user_data` مثل بقية البيانات.
-- لتغيير موديل Gemini أضف السر `GEMINI_MODEL` (مثلاً `gemini-2.5-flash-lite`) دون تعديل الكود.
+- كل مستخدم يدخل مفتاحه الخاص (Google AI Studio ← Get API key) في **المزيد ← الحساب**. المفتاح يُحفظ في `localStorage` على جهازه فقط، ويُرسل مباشرة إلى `generativelanguage.googleapis.com` — لا يمر عبر خادمنا ولا يُحفظ في المستودع.
+- بدون مفتاح، الضغط على «إرسال» يفتح صفحة الحساب. رسائل الخطأ تفرّق بين مفتاح غير صالح ونفاد الحصة ومشكلة إنترنت.
+- حصة الطلبات صارت على مفتاح المستخدم في Google، لا على مشروع Supabase.
+- فهرسة PDF واسترجاع المقاطع صارا في المتصفح بنفس المفتاح (نموذج `text-embedding-004`)، والمقاطع تُحفظ في جدول `chunks` الذي أضفناه إلى `schema.sql` — لازم تنفّذ الملف في Supabase مرة أخرى.
+- المساعد يحفظ ما تخبره به عنك في `profile.facts` عبر أداتي `remember` / `forget`، ويرسل السياق داخل `systemInstruction` ليتذكر اسمك وتفضيلاتك.
+- لتغيير الموديلات عدّل `GEMINI_MODEL` و`EMBED_MODEL` في أعلى سكربت `index.html`.
 
 ترتيب التبويبات: الرئيسية، الجدول، المواد، المساعد، المزيد. عند دخول أي محادثة يتم التمرير تلقائياً إلى آخر رسالة.
 زر `/` بجانب تبويبات المحادثات يفتح قائمة الأوامر: `/clear` يمسح كل رسائل المحادثة الحالية فقط (لا يمكن التراجع).
@@ -64,6 +61,6 @@ push.ps1 / رفع التحديث.cmd       رفع التعديلات بضغطة 
 
 - `config.js` يحتوي على **مفتاح عام** فقط، وهو آمن في مستودع عام.
 - الحماية الفعلية تعتمد على سياسات RLS في `schema.sql` — بدونها أي مفتاح عام يكشف بيانات المستخدمين.
-- الدالة `chat` تتحقق من JWT وتفرض حداً 15 طلب/دقيقة و200 طلب/يوم لكل مستخدم.
+- الدالة `chat` القديمة لم تعد مستخدمة؛ المحادثة والفهرسة بين المتصفح وGoogle بمفتاح المستخدم، بينما تسجيل الدخول مطلوب لمزامنة البيانات وتخزين المقاطع.
 - ملفات PDF خاصة، ومجلد كل مستخدم معزول، والحد الأقصى 15MB ونوع الملف مُقيّدان على الخادم.
-- أضيفت رؤوس CSP و`referrer` وSRI لسكربت Supabase في `index.html`.
+- أضيفت رؤوس CSP (تسمح بـ Google وcdnjs فقط) و`referrer` وSRI لسكربتَي Supabase وpdf.js في `index.html`.
