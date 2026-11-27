@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
 <title>WARAQ مساعد ورق</title>
 <style>
 :root{--bg:#EDE8DE;--sf:#F8F5EE;--tx:#0F2D2A;--mu:#556661;--pr:#0F2D2A;--on:#EDE8DE;--se:#5F8F7E;--ac:#F29966;--bd:#d6cfc0;--dn:#b42318;--lg:#0F2D2A;--lp:#F8F5EE;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -69,7 +72,7 @@ nav button.on{color:var(--pr);border-color:var(--ac);font-weight:700}
 <div class="wrap" id="main"></div>
 <nav id="nav" aria-label="التنقل"></nav>
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9/dist/umd/supabase.js" integrity="sha384-6foGJ1oz/y3anEo0BXRtTgBK1GvpnR0GbJZb0ijG+nBAJ4rYT+VqlD/9e3CSiFIA" crossorigin="anonymous"></script>
 <script>
 const CFG=window.WARAQ||{};
 const SUPABASE_URL=(CFG.url||'https://qilbqomdeximgdxwnxdy.supabase.co').trim();
@@ -134,7 +137,7 @@ function vHome(){
  h+=card('more','tasks','chk','المهام والواجبات',`${ot} مهام مفتوحة`);
  h+=card('assistant','','chat','المساعد الذكي','اسأل وعدّل جدولك بالمحادثة')+'</div>';
  if(tl.length)h+=`<div class="sec">محاضرات اليوم</div>`+tl.map(lecRow).join('');
- return h+'<p class="note">البيانات محفوظة في متصفحك فقط على هذا الجهاز.</p>'
+ return h+'<p class="note">بياناتك محفوظة على هذا الجهاز، وتُزامن مع حسابك فقط عند تسجيل الدخول.</p>'
 }
 const cur=k=>ed&&ed.k===k?S[k].find(x=>x.id===ed.id):null;
 const btns=(k,l)=>cur(k)?`<button class="go" onclick="add('${k}')">حفظ التعديل</button><button class="go ghost" onclick="ed=null;render()">إلغاء</button>`:`<button class="go" onclick="add('${k}')">${l}</button>`;
@@ -142,12 +145,12 @@ const act=(k,id,x)=>`<div class="act">${x||''}<button onclick="edit('${k}','${id
 function edit(k,id){ed={k,id};fv=null;if(k==='subjects'||k==='lectures')tab=k;else{tab='more';mt=k}render();scrollTo(0,0)}
 function vLogin(){
  const st=`<p class="sec" id="st" role="status" style="text-align:center">${esc(msg)}</p>`;
- return `<div class="login"><div class="hero">${logo(64)}<div><div class="wm">WARAQ</div><div class="wa">مساعد ورق</div></div></div><p class="tag">سجّل الدخول لتبدأ</p>`+(sb?`<div class="add"><input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr"><input id="pw" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="current-password" dir="ltr" onkeydown="if(event.key==='Enter')auth('in')"><button class="go" onclick="auth('in')">تسجيل الدخول</button><button class="go ghost" onclick="auth('up')">إنشاء حساب</button></div>${st}`:`<div class="bub">الإعدادات ناقصة: ملف config.js غير موجود أو فارغ. أنشئه بجانب index.html وضع فيه رابط Supabase والمفتاح العام.</div>`)+'</div>'
+ return `<div class="login"><div class="hero">${logo(64)}<div><div class="wm">WARAQ</div><div class="wa">مساعد ورق</div></div></div><p class="tag">سجّل الدخول لتبدأ</p>`+(sb?`<div class="add"><input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr" maxlength="254"><input id="pw" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="current-password" dir="ltr" maxlength="128" onkeydown="if(event.key==='Enter')auth('in')"><button class="go" onclick="auth('in')">تسجيل الدخول</button><button class="go ghost" onclick="auth('up')">إنشاء حساب</button></div>${st}`:`<div class="bub">الإعدادات ناقصة: ملف config.js غير موجود أو فارغ. أنشئه بجانب index.html وضع فيه رابط Supabase والمفتاح العام.</div>`)+'</div>'
 }
 function vSubjects(){
  if(fv&&sub(fv))return vFiles();
  const it=cur('subjects')||{};
- return `<div class="add"><input id="f1" placeholder="اسم المادة" value="${esc(it.name)}"><input id="f2" placeholder="اسم الدكتور (اختياري)" value="${esc(it.doctor)}">${btns('subjects','إضافة المادة')}</div>`+(S.subjects.length?S.subjects.map(s=>`<div class="row" style="--c:${s.color}"><div class="b"><b>${esc(s.name)}</b><small>${esc(s.doctor)||'بدون دكتور'} — ${S.lectures.filter(l=>l.subjectId===s.id).length} محاضرات، ${S.exams.filter(e=>e.subjectId===s.id).length} امتحانات، ${S.tasks.filter(t=>t.subjectId===s.id&&!t.done).length} مهام مفتوحة</small>${act('subjects',s.id,`<button onclick="fv='${s.id}';render()">الملفات (${S.files.filter(f=>f.subjectId===s.id).length})</button><button onclick="openChat('${s.id}')">محادثة</button>`)}</div>${xb('subjects',s.id)}</div>`).join(''):empty('ما عندك مواد بعد. أضف أول مادة.'))
+ return `<div class="add"><input id="f1" placeholder="اسم المادة" maxlength="80" value="${esc(it.name)}"><input id="f2" placeholder="اسم الدكتور (اختياري)" maxlength="80" value="${esc(it.doctor)}">${btns('subjects','إضافة المادة')}</div>`+(S.subjects.length?S.subjects.map(s=>`<div class="row" style="--c:${s.color}"><div class="b"><b>${esc(s.name)}</b><small>${esc(s.doctor)||'بدون دكتور'} — ${S.lectures.filter(l=>l.subjectId===s.id).length} محاضرات، ${S.exams.filter(e=>e.subjectId===s.id).length} امتحانات، ${S.tasks.filter(t=>t.subjectId===s.id&&!t.done).length} مهام مفتوحة</small>${act('subjects',s.id,`<button onclick="fv='${s.id}';render()">الملفات (${S.files.filter(f=>f.subjectId===s.id).length})</button><button onclick="openChat('${s.id}')">محادثة</button>`)}</div>${xb('subjects',s.id)}</div>`).join(''):empty('ما عندك مواد بعد. أضف أول مادة.'))
 }
 function vFiles(){
  const s=sub(fv),F=S.files.filter(f=>f.subjectId===fv);
@@ -167,7 +170,7 @@ async function upl(inp){
 async function openF(id){
  const f=S.files.find(x=>x.id===id);if(!f)return;
  const w=window.open('','_blank');
- const r=await sb.storage.from('pdfs').createSignedUrl(f.path,3600);
+ const r=await sb.storage.from('pdfs').createSignedUrl(f.path,300);
  if(r.error){if(w)w.close();return setFm('تعذّر فتح الملف: '+r.error.message)}
  if(w)w.location=r.data.signedUrl;else location.href=r.data.signedUrl
 }
@@ -180,21 +183,21 @@ async function delF(id){
 function vLectures(){
  if(!S.subjects.length)return needSub;
  const it=cur('lectures')||{};
- let h=`<div class="add"><select id="f1">${opts(0,it.subjectId)}</select><select id="f2">${DAYS.map((d,i)=>`<option value="${i}"${it.day===i?' selected':''}>${d}</option>`).join('')}</select><input id="f3" type="time" aria-label="من" value="${esc(it.start)}"><input id="f4" type="time" aria-label="إلى" value="${esc(it.end)}"><input id="f5" placeholder="القاعة" value="${esc(it.room)}">${btns('lectures','إضافة المحاضرة')}</div>`,any=false;
+ let h=`<div class="add"><select id="f1">${opts(0,it.subjectId)}</select><select id="f2">${DAYS.map((d,i)=>`<option value="${i}"${it.day===i?' selected':''}>${d}</option>`).join('')}</select><input id="f3" type="time" aria-label="من" value="${esc(it.start)}"><input id="f4" type="time" aria-label="إلى" value="${esc(it.end)}"><input id="f5" placeholder="القاعة" maxlength="40" value="${esc(it.room)}">${btns('lectures','إضافة المحاضرة')}</div>`,any=false;
  DAYS.forEach((d,i)=>{const L=S.lectures.filter(l=>l.day===i).sort(byStart);if(!L.length)return;any=true;h+=`<div class="day">${d}</div>`+L.map(lecRow).join('')});
  return h+(any?'':empty('ما أضفت محاضرات بعد.'))
 }
 function vExams(){
  if(!S.subjects.length)return needSub;
  const it=cur('exams')||{};
- const h=`<div class="add"><select id="f1">${opts(0,it.subjectId)}</select><input id="f2" type="date" aria-label="التاريخ" value="${esc(it.date)}"><input id="f3" type="time" aria-label="الوقت" value="${esc(it.time)}"><input id="f4" placeholder="النوع (شهري، نهائي…)" value="${esc(it.kind)}">${btns('exams','إضافة الامتحان')}</div>`;
+ const h=`<div class="add"><select id="f1">${opts(0,it.subjectId)}</select><input id="f2" type="date" aria-label="التاريخ" value="${esc(it.date)}"><input id="f3" type="time" aria-label="الوقت" value="${esc(it.time)}"><input id="f4" placeholder="النوع (شهري، نهائي…)" maxlength="60" value="${esc(it.kind)}">${btns('exams','إضافة الامتحان')}</div>`;
  return h+(S.exams.length?[...S.exams].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>{const d=left(e.date);
   const c=d<0?'<div class="cd">—<small>انتهى</small></div>':d===0?'<div class="cd">اليوم</div>':`<div class="cd">${d}<small>يوم</small></div>`;
   return `<div class="row" style="--c:${scol(e.subjectId)}">${c}<div class="b"><b>${sname(e.subjectId)}${e.kind?' — '+esc(e.kind):''}</b><small>${esc(e.date)}${e.time?' — '+esc(e.time):''}</small>${act('exams',e.id)}</div>${xb('exams',e.id)}</div>`}).join(''):empty('ما أضفت امتحانات بعد.'))
 }
 function vTasks(){
  const it=cur('tasks')||{};
- const h=`<div class="add"><select id="f1">${opts(1,it.subjectId)}</select><input id="f2" placeholder="المهمة أو الواجب" value="${esc(it.title)}"><input id="f3" type="date" aria-label="الموعد" value="${esc(it.due)}">${btns('tasks','إضافة المهمة')}</div>`;
+ const h=`<div class="add"><select id="f1">${opts(1,it.subjectId)}</select><input id="f2" placeholder="المهمة أو الواجب" maxlength="120" value="${esc(it.title)}"><input id="f3" type="date" aria-label="الموعد" value="${esc(it.due)}">${btns('tasks','إضافة المهمة')}</div>`;
  const T=[...S.tasks].sort((a,b)=>(a.done-b.done)||(a.due||'9').localeCompare(b.due||'9'));
  return h+(T.length?T.map(t=>`<div class="row${t.done?' done':''}" style="--c:${scol(t.subjectId)}"><input type="checkbox" aria-label="تم" ${t.done?'checked':''} onchange="tog('${t.id}')"><div class="b"><b>${esc(t.title)}</b><small>${sname(t.subjectId)}${t.due?' — '+esc(t.due):''}</small>${act('tasks',t.id)}</div>${xb('tasks',t.id)}</div>`).join(''):empty('ما عندك مهام. استمتع!'))
 }
@@ -240,7 +243,7 @@ function vAssist(){
  const k=chatKey(),H=S.chats[k]||[];
  const chips=[['general','عام'],...S.subjects.map(s=>[s.id,s.name])].map(c=>`<button class="${c[0]===k?'on':''}" onclick="openChat('${c[0]}')">${esc(c[1])}</button>`).join('');
  const msgs=H.length?H.map(m=>`<div class="m ${m.r}">${esc(m.t)}</div>`).join(''):`<div class="bub">أهلاً! أنا مساعد ورق. اسألني عن جدولك وامتحاناتك، أو اطلب مني إضافة وتعديل وحذف المواد والمحاضرات والامتحانات والمهام بكلامك العادي.</div>`;
- return `<div class="chips">${chips}</div>${sb&&user?'':'<div class="bub">سجّل الدخول من «المزيد ← الحساب» لتستخدم المساعد.</div>'}<div>${msgs}${busyChat?'<div class="m a">…</div>':''}</div><div class="add"><input id="q" placeholder="اكتب رسالتك…" onkeydown="if(event.key===\'Enter\')send()"><button class="go" onclick="send()">إرسال</button></div>`
+ return `<div class="chips">${chips}</div>${sb&&user?'':'<div class="bub">سجّل الدخول من «المزيد ← الحساب» لتستخدم المساعد.</div>'}<div>${msgs}${busyChat?'<div class="m a">…</div>':''}</div><div class="add"><input id="q" placeholder="اكتب رسالتك…" maxlength="2000" onkeydown="if(event.key===\'Enter\')send()"><button class="go" onclick="send()">إرسال</button></div>`
 }
 async function send(){
  const inp=$('#q'),text=(inp&&inp.value||'').trim();
@@ -271,7 +274,7 @@ async function send(){
 const vMore=()=>`<div class="seg">${[['exams','الامتحانات'],['tasks','المهام'],['account','الحساب']].map(m=>`<button class="${mt===m[0]?'on':''}" onclick="go('more','${m[0]}')">${m[1]}</button>`).join('')}</div>`+(mt==='exams'?vExams():mt==='tasks'?vTasks():vAccount());
 /* ===== الحساب والمزامنة ===== */
 const BASE=()=>({subjects:[],lectures:[],exams:[],tasks:[],files:[],chats:{}});
-const sb=(SUPABASE_URL&&SUPABASE_KEY&&window.supabase)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
+const sb=(SUPABASE_URL&&SUPABASE_KEY&&window.supabase)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
 let user=null,msg='',timer=null;
 const setMsg=m=>{msg=m;const e=$('#st');if(e)e.textContent=m};
 const has=o=>['subjects','lectures','exams','tasks'].some(k=>(o[k]||[]).length);
@@ -280,7 +283,7 @@ function vAccount(){
  if(!sb)return `<div class="bub">تسجيل الدخول غير مفعّل بعد. ضع رابط مشروع Supabase والمفتاح العام في أول السكربت (SUPABASE_URL و SUPABASE_KEY) ثم ارفع الصفحة على استضافتك.</div>`;
  const st=`<p class="sec" id="st" role="status">${esc(msg)}</p>`;
  if(user)return `<div class="bub">مسجّل بحساب:<br><b>${esc(user.email)}</b><br><small class="sec">عند تسجيل الخروج تُمسح بيانات هذا الجهاز وتبقى محفوظة في حسابك.</small></div><div class="add"><button class="go" onclick="pull()">مزامنة الآن</button><button class="go" onclick="logout()">تسجيل الخروج</button></div>${st}`;
- return `<div class="add"><input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr"><input id="pw" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="current-password" dir="ltr"><button class="go" onclick="auth('in')">تسجيل الدخول</button><button class="go" onclick="auth('up')">إنشاء حساب</button></div>${st}`;
+ return `<div class="add"><input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr" maxlength="254"><input id="pw" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="current-password" dir="ltr" maxlength="128"><button class="go" onclick="auth('in')">تسجيل الدخول</button><button class="go" onclick="auth('up')">إنشاء حساب</button></div>${st}`;
 }
 async function auth(k){
  const email=v('em').trim(),password=v('pw');
@@ -303,7 +306,9 @@ async function pull(){
  if(r.error)return setMsg('تعذّرت المزامنة: '+r.error.message);
  const rd=r.data&&r.data.data;
  if(!rd){S._u=user.id;persist();return upload()}
- if(S._u!==user.id&&has(S)){S=Object.assign(BASE(),merge(rd,S),{chats:Object.assign({},rd.chats,S.chats),_u:user.id});save();return setMsg('تم دمج بيانات هذا الجهاز مع حسابك.')}
+  // لا تدمج أبداً بيانات حساب سابق في حساب جديد على نفس الجهاز
+  if(S._u&&S._u!==user.id){S=Object.assign(BASE(),rd,{_u:user.id});persist();render();return setMsg('تم تحميل بيانات حسابك. لم تُدمج بيانات حساب آخر.')}
+ if(!S._u&&has(S)){S=Object.assign(BASE(),merge(rd,S),{chats:Object.assign({},rd.chats,S.chats),_u:user.id});save();return setMsg('تم دمج بيانات هذا الجهاز مع حسابك.')}
  const rt=rd._t||0,lt=S._t||0;
  if(rt>lt||S._u!==user.id){S=Object.assign(BASE(),rd,{_u:user.id});persist();render();setMsg('تمت المزامنة.')}
  else if(lt>rt)upload();
