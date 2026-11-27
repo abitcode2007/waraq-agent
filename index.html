@@ -82,11 +82,11 @@ const COLORS=['#2f6f62','#F29966','#7a6a4f','#3f6b8a','#a85a5a','#6b5b95','#5F8F
 const IC={home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 1 2-2h13',cal:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',chat:'M4 5h16v11H9l-5 4z',more:'M5 12h.01M12 12h.01M19 12h.01',spark:'M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z',doc:'M6 3h12v18H6zM9 8h6M9 12h6',chk:'M5 12l4 4 10-10'};
 const ic=(k,w)=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="${w||1.8}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${IC[k]}"/></svg>`;
 const logo=n=>`<svg viewBox="0 0 64 64" width="${n}" height="${n}" aria-hidden="true"><path d="M36 10l16 6v34l-16 4z" fill="var(--lp)" stroke="var(--bd)" stroke-width="2" stroke-linejoin="round"/><path d="M7 14l19 14v22L7 38z" fill="var(--lg)" stroke="var(--lg)" stroke-width="4" stroke-linejoin="round"/><path d="M28 18l16-6v36l-16 8z" fill="var(--se)" stroke="var(--se)" stroke-width="4" stroke-linejoin="round"/></svg>`;
-const NAV=[['home','الرئيسية','home'],['subjects','المواد','book'],['lectures','الجدول','cal'],['assistant','المساعد','chat'],['more','المزيد','more']];
+const NAV=[['home','الرئيسية','home'],['lectures','الجدول','cal'],['subjects','المواد','book'],['assistant','المساعد','chat'],['more','المزيد','more']];
 const TITLES={subjects:'المواد',lectures:'الجدول الدراسي',assistant:'المساعد الذكي',more:'المزيد'};
-let S={subjects:[],lectures:[],exams:[],tasks:[],files:[],chats:{}},tab='home',mt='exams',ed=null,fv=null,ready=false;
+let S={subjects:[],lectures:[],exams:[],tasks:[],files:[],chats:{},profile:{facts:[]}},tab='home',mt='exams',ed=null,fv=null,ready=false;
 try{const r=localStorage.getItem('planner_v1');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
-S.chats=S.chats||{};S.files=S.files||[];
+S.chats=S.chats||{};S.files=S.files||[];S.profile=S.profile||{facts:[]};S.profile.facts=S.profile.facts||[];
 const persist=()=>{try{localStorage.setItem('planner_v1',JSON.stringify(S))}catch(e){}};
 const save=()=>{S._t=Date.now();persist();push()};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -206,7 +206,7 @@ let ck='general',busyChat=false;
 const chatKey=()=>ck==='general'||sub(ck)?ck:'general';
 const rn=id=>sub(id)?sub(id).name:'';
 const localDay=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
-const snap=()=>({today:localDay(),weekday:DAYS[(new Date().getDay()+1)%7],focus:chatKey()!=='general'?rn(chatKey()):'',data:{
+const snap=()=>({today:localDay(),weekday:DAYS[(new Date().getDay()+1)%7],focus:chatKey()!=='general'?rn(chatKey()):'',profile:(S.profile&&S.profile.facts)||[],data:{
  subjects:S.subjects.map(s=>({id:s.id,name:s.name,doctor:s.doctor})),
  lectures:S.lectures.map(l=>({id:l.id,subject:rn(l.subjectId),day:DAYS[l.day],start:l.start,end:l.end,room:l.room})),
  exams:S.exams.map(e=>({id:e.id,subject:rn(e.subjectId),date:e.date,time:e.time,exam_type:e.kind})),
@@ -236,13 +236,24 @@ function run(n,a){
   if(typeof a.done==='boolean')up.done=a.done;
   Object.assign(it,up);return{ok:true}
  }
+ if(n==='remember'){
+  const f=String(a.fact||'').trim().slice(0,200);if(!f)return{error:'المعلومة فارغة'};
+  S.profile=S.profile||{facts:[]};S.profile.facts=S.profile.facts||[];
+  if(S.profile.facts.some(x=>String(x).toLowerCase()===f.toLowerCase()))return{ok:true,note:'معلومة محفوظة مسبقاً'};
+  S.profile.facts.push(f);if(S.profile.facts.length>30)S.profile.facts.shift();return{ok:true}
+ }
+ if(n==='forget'){
+  S.profile=S.profile||{facts:[]};S.profile.facts=S.profile.facts||[];
+  const f=String(a.fact||'').trim().toLowerCase();const i=S.profile.facts.findIndex(x=>String(x).toLowerCase()===f);
+  if(i<0)return{error:'ما لقيت هذه المعلومة'};S.profile.facts.splice(i,1);return{ok:true}
+ }
  return{error:'أداة غير معروفة'}
 }
 const openChat=k=>{ck=k;go('assistant');scrollTo(0,document.body.scrollHeight)};
 function vAssist(){
  const k=chatKey(),H=S.chats[k]||[];
  const chips=[['general','عام'],...S.subjects.map(s=>[s.id,s.name])].map(c=>`<button class="${c[0]===k?'on':''}" onclick="openChat('${c[0]}')">${esc(c[1])}</button>`).join('');
- const msgs=H.length?H.map(m=>`<div class="m ${m.r}">${esc(m.t)}</div>`).join(''):`<div class="bub">أهلاً! أنا مساعد ورق. اسألني عن جدولك وامتحاناتك، أو اطلب مني إضافة وتعديل وحذف المواد والمحاضرات والامتحانات والمهام بكلامك العادي.</div>`;
+ const msgs=H.length?H.map(m=>`<div class="m ${m.r}">${esc(m.t)}</div>`).join(''):`<div class="bub">أهلاً! أنا مساعد ورق. اسألني عن جدولك وامتحاناتك، أو اطلب مني إضافة وتعديل وحذف المواد والمحاضرات والامتحانات والمهام بكلامك العادي. وسأتذكر ما تخبرني به عنك لأخصّص ردودي (${((S.profile&&S.profile.facts)||[]).length} معلومة محفوظة الآن).</div>`;
  return `<div class="chips">${chips}</div>${sb&&user?'':'<div class="bub">سجّل الدخول من «المزيد ← الحساب» لتستخدم المساعد.</div>'}<div>${msgs}${busyChat?'<div class="m a">…</div>':''}</div><div class="add"><input id="q" placeholder="اكتب رسالتك…" maxlength="2000" onkeydown="if(event.key===\'Enter\')send()"><button class="go" onclick="send()">إرسال</button></div>`
 }
 async function send(){
@@ -271,14 +282,26 @@ async function send(){
  if(H.length>60)H.splice(0,H.length-60);
  save();render();scrollTo(0,document.body.scrollHeight)
 }
-const vMore=()=>`<div class="seg">${[['exams','الامتحانات'],['tasks','المهام'],['account','الحساب']].map(m=>`<button class="${mt===m[0]?'on':''}" onclick="go('more','${m[0]}')">${m[1]}</button>`).join('')}</div>`+(mt==='exams'?vExams():mt==='tasks'?vTasks():vAccount());
+const vMore=()=>`<div class="seg">${[['exams','الامتحانات'],['tasks','المهام'],['memory','الذاكرة'],['account','الحساب']].map(m=>`<button class="${mt===m[0]?'on':''}" onclick="go('more','${m[0]}')">${m[1]}</button>`).join('')}</div>`+(mt==='exams'?vExams():mt==='tasks'?vTasks():mt==='memory'?vMemory():vAccount());
+/* ===== ذاكرة المساعد ===== */
+function addFact(){
+ const e=$('#mf'),f=(e&&e.value||'').trim().slice(0,200);if(!f)return;
+ S.profile=S.profile||{facts:[]};S.profile.facts=S.profile.facts||[];
+ if(!S.profile.facts.some(x=>String(x).toLowerCase()===f.toLowerCase()))S.profile.facts.push(f);
+ save();render()
+}
+function forgetFact(i){S.profile=S.profile||{facts:[]};S.profile.facts=S.profile.facts||[];S.profile.facts.splice(i,1);save();render()}
+function vMemory(){
+ const F=(S.profile&&S.profile.facts)||[];
+ return `<div class="bub">هذي المعلومات اللي المساعد يتذكرها عنك، ويستخدمها يخصّص ردوده تلقائياً.</div>`+(F.length?F.map((f,i)=>`<div class="row"><div class="b"><b>${esc(f)}</b></div><button class="x" aria-label="حذف" onclick="forgetFact(${i})">×</button></div>`).join(''):empty('ما عندي معلومات عنك بعد. قل للمساعد عن نفسك وسأتذكرها.'))+`<div class="add"><input id="mf" placeholder="معلومة تريد أن يتذكرها المساعد" maxlength="200" onkeydown="if(event.key==='Enter')addFact()"><button class="go" onclick="addFact()">إضافة</button></div>`
+}
 /* ===== الحساب والمزامنة ===== */
-const BASE=()=>({subjects:[],lectures:[],exams:[],tasks:[],files:[],chats:{}});
+const BASE=()=>({subjects:[],lectures:[],exams:[],tasks:[],files:[],chats:{},profile:{facts:[]}});
 const sb=(SUPABASE_URL&&SUPABASE_KEY&&window.supabase)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
 let user=null,msg='',timer=null;
 const setMsg=m=>{msg=m;const e=$('#st');if(e)e.textContent=m};
 const has=o=>['subjects','lectures','exams','tasks'].some(k=>(o[k]||[]).length);
-function merge(a,b){const o={subjects:[],lectures:[],exams:[],tasks:[],files:[]};for(const k in o){const ids=new Set((a[k]||[]).map(x=>x.id));o[k]=[...(a[k]||[]),...(b[k]||[]).filter(x=>!ids.has(x.id))]}return o}
+function merge(a,b){const o={subjects:[],lectures:[],exams:[],tasks:[],files:[]};for(const k in o){const ids=new Set((a[k]||[]).map(x=>x.id));o[k]=[...(a[k]||[]),...(b[k]||[]).filter(x=>!ids.has(x.id))]}const fa=(a.profile&&a.profile.facts)||[],fb=(b.profile&&b.profile.facts)||[];o.profile={facts:[...fa,...fb.filter(x=>!fa.some(y=>String(y).toLowerCase()===String(x).toLowerCase()))]};return o}
 function vAccount(){
  if(!sb)return `<div class="bub">تسجيل الدخول غير مفعّل بعد. ضع رابط مشروع Supabase والمفتاح العام في أول السكربت (SUPABASE_URL و SUPABASE_KEY) ثم ارفع الصفحة على استضافتك.</div>`;
  const st=`<p class="sec" id="st" role="status">${esc(msg)}</p>`;

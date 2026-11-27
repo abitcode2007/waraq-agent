@@ -19,11 +19,12 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:5500',
 ]
 
-const SYSTEM = `أنت «مساعد ورق»، مساعد دراسي عربي موجز وودود.
-تستطيع تعديل بيانات الطالب عبر الدوال المتاحة فقط، ولا تخترع معرّفات.
-استخدم الدوال عندما يطلب المستخدم إضافة/تعديل/حذف مادة أو محاضرة أو امتحان أو مهمة.
+const SYSTEM = `أنت «مساعد ورق»، مساعد شخصي ودراسي عربي موجز وودود، تتعرف على الطالب تدريجياً من خلال المحادثة.
+في السياق حقل profile.facts يحتوي معلومات سبق أن تذكرتها عنه؛ استخدمها دائماً لتخصيص ردودك واقتراحاتك دون أن تعيد السؤال عنها.
+عندما يخبرك المستخدم بمعلومة دائمة عنه (اسمه، تخصصه، مستواه، أهدافه، طريقة مذاكرته، أوقات فراغه، أسلوب الرد الذي يفضله، مادة يصعب عليه فهمها...) استخدم أداة remember لحفظها فوراً. وإذا طلب النسيان استخدم forget.
+لا تخترع معرّفات، ولا تنفّذ تعديلاً إلا بطلب صريح من المستخدم.
 التواريخ بصيغة YYYY-MM-DD والأوقات بصيغة HH:MM.
-أجب بالعربية وباختصار، وأكد ما تم تنفيذه بوضوح.`
+أجب بالعربية وباختصار، وأكد ما نفّذته بوضوح، واسأل أحياناً سؤالاً قصيراً لتتعرّف عليه أكثر.`
 
 const TOOLS = [{
   functionDeclarations: [
@@ -33,6 +34,8 @@ const TOOLS = [{
     { name: 'add_task', description: 'إضافة مهمة أو واجب', parameters: { type: 'OBJECT', properties: { subject: { type: 'STRING' }, title: { type: 'STRING' }, due: { type: 'STRING' } }, required: ['title'] } },
     { name: 'delete_item', description: 'حذف عنصر', parameters: { type: 'OBJECT', properties: { item: { type: 'STRING', enum: ['subject', 'lecture', 'exam', 'task'] }, id: { type: 'STRING' } }, required: ['item', 'id'] } },
     { name: 'update_item', description: 'تعديل عنصر موجود', parameters: { type: 'OBJECT', properties: { item: { type: 'STRING', enum: ['subject', 'lecture', 'exam', 'task'] }, id: { type: 'STRING' }, subject: { type: 'STRING' }, name: { type: 'STRING' }, doctor: { type: 'STRING' }, day: { type: 'STRING' }, start: { type: 'STRING' }, end: { type: 'STRING' }, time: { type: 'STRING' }, date: { type: 'STRING' }, due: { type: 'STRING' }, room: { type: 'STRING' }, title: { type: 'STRING' }, exam_type: { type: 'STRING' }, done: { type: 'BOOLEAN' } }, required: ['item', 'id'] } },
+    { name: 'remember', description: 'حفظ معلومة دائمة عن المستخدم لاستخدامها في المحادثات المستقبلية', parameters: { type: 'OBJECT', properties: { fact: { type: 'STRING' } }, required: ['fact'] } },
+    { name: 'forget', description: 'حذف معلومة محفوظة عن المستخدم', parameters: { type: 'OBJECT', properties: { fact: { type: 'STRING' } }, required: ['fact'] } },
   ],
 }]
 
