@@ -1,4 +1,4 @@
-# رفع كل التعديلات إلى GitHub بضغطة واحدة
+﻿# رفع كل التعديلات إلى GitHub بضغطة واحدة
 # الاستخدام: .\push.ps1 "رسالة التعديل"   (الرسالة اختيارية)
 $ErrorActionPreference = 'Stop'
 Set-Location $PSScriptRoot

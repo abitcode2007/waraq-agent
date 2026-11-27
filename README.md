@@ -12,6 +12,12 @@ supabase/schema.sql              الجداول وسياسات RLS و Storage و
 supabase/functions/chat/         Edge Function قديمة (غير مستخدمة بعد تحويل المساعد لمفتاح المستخدم)
 .github/workflows/deploy-function.yml   نشر الدالة تلقائياً
 push.ps1 / رفع التحديث.cmd       رفع التعديلات بضغطة واحدة
+build-apk.ps1 / npm run apk       بناء نسخة أندرويد (APK)
+capacitor.config.json            إعدادات غلاف Capacitor
+android/                          مشروع أندرويد المولّد
+scripts/copy-web.js               نسخ الواجهة إلى www قبل البناء
+scripts/make-icons.ps1            توليد أيقونة ورق لأندرويد
+apk/WARAQ-debug.apk               النسخة الجاهزة للتثبيت على الهاتف
 ```
 
 ## التحديث اليومي (بدون نقل ملفات يدوياً)
@@ -65,3 +71,20 @@ push.ps1 / رفع التحديث.cmd       رفع التعديلات بضغطة 
 - الدالة `chat` القديمة لم تعد مستخدمة؛ المحادثة والفهرسة بين المتصفح وGoogle بمفتاح المستخدم، بينما تسجيل الدخول مطلوب لمزامنة البيانات وتخزين المقاطع.
 - ملفات PDF خاصة، ومجلد كل مستخدم معزول، والحد الأقصى 15MB ونوع الملف مُقيّدان على الخادم.
 - أضيفت رؤوس CSP (تسمح بـ Google وcdnjs فقط) و`referrer` وSRI لسكربتَي Supabase وpdf.js في `index.html`.
+
+## تطبيق أندرويد (Capacitor APK)
+
+الـ APK جاهز في `apk/WARAQ-debug.apk` — انقله إلى هاتفك وافتحه، ثم اسمح بالتثبيت من «مصادر غير معروفة» عند الطلب. التطبيق يحمل نسخة من الواجهة، فلا يحتاج إنترنت ليفتح، لكن المساعد وPDF يحتاجان مفتاح Gemini الخاص بك كما في الموقع.
+
+لبناء نسخة جديدة بعد أي تعديل على `index.html`:
+
+```powershell
+npm install          # مرة واحدة فقط
+npm run apk          # أو: powershell -File build-apk.ps1
+```
+
+السكربت ينسخ الويب إلى `www`، يزامن Capacitor، يبني APK عبر Gradle، ويضع الناتج في `apk/WARAQ-debug.apk`.
+
+**متطلبات البناء على هذا الجهاز:** Node.js (مثبّت)، JDK 21، وAndroid SDK (منصة 36 + Build Tools). لأن مسار المستخدم فيه أحرف عربية، يبني السكربت داخل `C:\waraq-build\project` (مسار ASCII) لتفادي مشاكل Gradle مع المسارات غير اللاتينية. أيقونة التطبيق مولّدة من `scripts/make-icons.ps1` ويمكن إعادة توليدها بـ `npm run icons`.
+
+> النسخة الحالية `debug` وموقّعة بشهادة تطوير، مناسبة للتثبيت المباشر على هاتفك. عند النشر في Google Play نحتاج توقيع release ورفع AAB بدلاً من APK.

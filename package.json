@@ -1,0 +1,19 @@
+{
+  "name": "waraq-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WARAQ assistant - Android wrapper built with Capacitor",
+  "scripts": {
+    "build:web": "node scripts/copy-web.js",
+    "cap:sync": "npm run build:web && cap sync android",
+    "icons": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\make-icons.ps1",
+    "apk": "powershell -NoProfile -ExecutionPolicy Bypass -File build-apk.ps1"
+  },
+  "dependencies": {
+    "@capacitor/core": "8.6.3"
+  },
+  "devDependencies": {
+    "@capacitor/android": "8.6.3",
+    "@capacitor/cli": "8.6.3"
+  }
+}

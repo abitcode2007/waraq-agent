@@ -3,3 +3,8 @@
 *.local
 .DS_Store
 node_modules/
+www/
+android/app/build/
+android/.gradle/
+android/build/
+android/local.properties
