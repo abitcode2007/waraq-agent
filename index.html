@@ -87,7 +87,8 @@ nav button.on{color:var(--pr);border-color:var(--ac);font-weight:700}
 const CFG=window.WARAQ||{};
 const SUPABASE_URL=(CFG.url||'https://qilbqomdeximgdxwnxdy.supabase.co').trim();
 const SUPABASE_KEY=(CFG.key||'sb_publishable_i_R78zng5q1drR4kN1dkTg_NtVfIFcV').trim();
-const GEMINI_MODEL='gemini-3.8-flash',EMBED_MODEL='gemini-embedding-001',GEMINI_STORE='waraq_gemini_key';
+const GEMINI_MODELS=['gemini-3.8-flash','gemini-3.7-flash','gemini-3.6-flash','gemini-3.5-flash','gemini-3.1-flash-lite'],GEMINI_MODEL=GEMINI_MODELS[0],EMBED_MODEL='gemini-embedding-001',GEMINI_STORE='waraq_gemini_key';
+let gemIdx=0;
 const gemKey=()=>{try{return(localStorage.getItem(GEMINI_STORE)||'').trim()}catch(e){return''}};
 const setGemKey=v=>{try{localStorage.setItem(GEMINI_STORE,(v||'').trim())}catch(e){}};
 const DAYS=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
@@ -375,12 +376,18 @@ function turnInput(history){
  return out;
 }
 async function askGemini(key,input,rag){
- const r=await fetch('https://generativelanguage.googleapis.com/v1beta/interactions',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({model:GEMINI_MODEL,store:false,input,system_instruction:ASYS+'\n\nسياق المستخدم الحالي:\n'+JSON.stringify(snap())+rag,tools:ATOOLS,generation_config:{max_output_tokens:1024}})});
- const d=await r.json().catch(()=>({}));
- const ge=d.error||(Array.isArray(d)&&d[0]&&d[0].error)||null;
- if(!r.ok)throw new Error(String(ge?.message||ge||('خطأ '+r.status)));
- if(ge)throw new Error(String(ge.message||ge));
- return d;
+ const busy=/high demand|overloaded|unavailable|temporarily|spikes|service unavailable|rate limit|quota|429|503/i;
+ for(let n=0;n<GEMINI_MODELS.length;n++){
+  const i=(gemIdx+n)%GEMINI_MODELS.length;
+  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/interactions',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({model:GEMINI_MODELS[i],store:false,input,system_instruction:ASYS+'\n\nسياق المستخدم الحالي:\n'+JSON.stringify(snap())+rag,tools:ATOOLS,generation_config:{max_output_tokens:1024}})});
+  const d=await r.json().catch(()=>({}));
+  const ge=d.error||(Array.isArray(d)&&d[0]&&d[0].error)||null;
+  if(r.ok&&!ge){gemIdx=i;return d}
+  const m=String(ge?.message||ge||('خطأ '+r.status));
+  if(!busy.test(m))throw new Error(m);
+ }
+ gemIdx=0;
+ throw new Error('high demand')
 }
 const chatBox=()=>$('#msgs');
 const toLast=()=>{const e=chatBox();if(e)e.scrollTop=e.scrollHeight;else scrollTo(0,document.body.scrollHeight)};
@@ -420,7 +427,7 @@ async function send(){
    if(reply)break
   }
   newSteps=input.slice(base)
- }catch(x){const m=String(x.message||x);err=/api[ _-]?key|invalid|unauthorized|permission/i.test(m)?'مفتاح Gemini غير صالح أو غير مفعّل. راجعه من «المزيد ← الحساب».':/quota|exhausted|rate|429/i.test(m)?'انتهت حصة مفتاحك المجانية أو كثّرت الطلبات. جرّب بعد قليل.':/network|fetch|failed/i.test(m)?'تعذّر الاتصال بـ Google. تأكد من الإنترنت ثم أعد المحاولة.':'تعذّر الاتصال بالمساعد: '+m}
+ }catch(x){const m=String(x.message||x);err=/api[ _-]?key|invalid|unauthorized|permission/i.test(m)?'مفتاح Gemini غير صالح أو غير مفعّل. راجعه من «المزيد ← الحساب».':/high demand|overloaded|unavailable|temporarily|spikes|service unavailable|503/i.test(m)?'الموديلات مشغولة حالياً بسبب الضغط على Google، جرّب بعد قليل.':/quota|exhausted|rate|429/i.test(m)?'انتهت حصة مفتاحك المجانية أو كثّرت الطلبات. جرّب بعد قليل.':/network|fetch|failed/i.test(m)?'تعذّر الاتصال بـ Google. تأكد من الإنترنت ثم أعد المحاولة.':'تعذّر الاتصال بالمساعد: '+m}
  busyChat=false;
  H.push(err?{r:'a',t:err,e:1}:{r:'a',t:reply||'تم.',steps:newSteps});
  if(H.length>60)H.splice(0,H.length-60);
