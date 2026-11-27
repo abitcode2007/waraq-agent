@@ -87,7 +87,7 @@ nav button.on{color:var(--pr);border-color:var(--ac);font-weight:700}
 const CFG=window.WARAQ||{};
 const SUPABASE_URL=(CFG.url||'https://qilbqomdeximgdxwnxdy.supabase.co').trim();
 const SUPABASE_KEY=(CFG.key||'sb_publishable_i_R78zng5q1drR4kN1dkTg_NtVfIFcV').trim();
-const GEMINI_MODEL='gemini-2.5-flash',EMBED_MODEL='text-embedding-004',GEMINI_STORE='waraq_gemini_key';
+const GEMINI_MODEL='gemini-3.8-flash',EMBED_MODEL='gemini-embedding-001',GEMINI_STORE='waraq_gemini_key';
 const gemKey=()=>{try{return(localStorage.getItem(GEMINI_STORE)||'').trim()}catch(e){return''}};
 const setGemKey=v=>{try{localStorage.setItem(GEMINI_STORE,(v||'').trim())}catch(e){}};
 const DAYS=['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
@@ -308,16 +308,16 @@ const ASYS=`أنت «مساعد ورق»، مساعد شخصي ودراسي عر
 لا تخترع معرّفات، ولا تنفّذ تعديلاً إلا بطلب صريح من المستخدم.
 التواريخ بصيغة YYYY-MM-DD والأوقات بصيغة HH:MM.
 أجب بالعربية وباختصار، وأكد ما نفّذته بوضوح.`;
-const ATOOLS={functionDeclarations:[
- {name:'add_subject',description:'إضافة مادة دراسية',parameters:{type:'OBJECT',properties:{name:{type:'STRING'},doctor:{type:'STRING'}},required:['name']}},
- {name:'add_lecture',description:'إضافة محاضرة إلى الجدول',parameters:{type:'OBJECT',properties:{subject:{type:'STRING'},day:{type:'STRING',description:'السبت، الأحد، الاثنين، الثلاثاء، الأربعاء، الخميس، الجمعة'},start:{type:'STRING'},end:{type:'STRING'},room:{type:'STRING'}},required:['subject','day','start','end']}},
- {name:'add_exam',description:'إضافة امتحان',parameters:{type:'OBJECT',properties:{subject:{type:'STRING'},date:{type:'STRING'},time:{type:'STRING'},exam_type:{type:'STRING'}},required:['subject','date']}},
- {name:'add_task',description:'إضافة مهمة أو واجب',parameters:{type:'OBJECT',properties:{subject:{type:'STRING'},title:{type:'STRING'},due:{type:'STRING'}},required:['title']}},
- {name:'delete_item',description:'حذف عنصر',parameters:{type:'OBJECT',properties:{item:{type:'STRING',enum:['subject','lecture','exam','task']},id:{type:'STRING'}},required:['item','id']}},
- {name:'update_item',description:'تعديل عنصر موجود',parameters:{type:'OBJECT',properties:{item:{type:'STRING',enum:['subject','lecture','exam','task']},id:{type:'STRING'},subject:{type:'STRING'},name:{type:'STRING'},doctor:{type:'STRING'},day:{type:'STRING'},start:{type:'STRING'},end:{type:'STRING'},time:{type:'STRING'},date:{type:'STRING'},due:{type:'STRING'},room:{type:'STRING'},title:{type:'STRING'},exam_type:{type:'STRING'},done:{type:'BOOLEAN'}},required:['item','id']}},
- {name:'remember',description:'حفظ معلومة دائمة عن المستخدم',parameters:{type:'OBJECT',properties:{fact:{type:'STRING'}},required:['fact']}},
- {name:'forget',description:'حذف معلومة محفوظة عن المستخدم',parameters:{type:'OBJECT',properties:{fact:{type:'STRING'}},required:['fact']}}
-]};
+const ATOOLS=[
+ {type:'function',name:'add_subject',description:'إضافة مادة دراسية',parameters:{type:'object',properties:{name:{type:'string'},doctor:{type:'string'}},required:['name']}},
+ {type:'function',name:'add_lecture',description:'إضافة محاضرة إلى الجدول',parameters:{type:'object',properties:{subject:{type:'string'},day:{type:'string',description:'السبت، الأحد، الاثنين، الثلاثاء، الأربعاء، الخميس، الجمعة'},start:{type:'string'},end:{type:'string'},room:{type:'string'}},required:['subject','day','start','end']}},
+ {type:'function',name:'add_exam',description:'إضافة امتحان',parameters:{type:'object',properties:{subject:{type:'string'},date:{type:'string'},time:{type:'string'},exam_type:{type:'string'}},required:['subject','date']}},
+ {type:'function',name:'add_task',description:'إضافة مهمة أو واجب',parameters:{type:'object',properties:{subject:{type:'string'},title:{type:'string'},due:{type:'string'}},required:['title']}},
+ {type:'function',name:'delete_item',description:'حذف عنصر',parameters:{type:'object',properties:{item:{type:'string',enum:['subject','lecture','exam','task']},id:{type:'string'}},required:['item','id']}},
+ {type:'function',name:'update_item',description:'تعديل عنصر موجود',parameters:{type:'object',properties:{item:{type:'string',enum:['subject','lecture','exam','task']},id:{type:'string'},subject:{type:'string'},name:{type:'string'},doctor:{type:'string'},day:{type:'string'},start:{type:'string'},end:{type:'string'},time:{type:'string'},date:{type:'string'},due:{type:'string'},room:{type:'string'},title:{type:'string'},exam_type:{type:'string'},done:{type:'boolean'}},required:['item','id']}},
+ {type:'function',name:'remember',description:'حفظ معلومة دائمة عن المستخدم',parameters:{type:'object',properties:{fact:{type:'string'}},required:['fact']}},
+ {type:'function',name:'forget',description:'حذف معلومة محفوظة عن المستخدم',parameters:{type:'object',properties:{fact:{type:'string'}},required:['fact']}}
+];
 let ck='general',busyChat=false,showHelp=false;
 const hasIdx=()=>S.files.some(f=>f.n>0&&(chatKey()==='general'||f.subjectId===chatKey()));
 const chatKey=()=>ck==='general'||sub(ck)?ck:'general';
@@ -361,6 +361,27 @@ function run(n,a){
  }
  return{error:'أداة غير معروفة'}
 }
+const userStep=t=>({type:'user_input',content:[{type:'text',text:String(t||'')}]});
+const callArgs=a=>{if(typeof a==='string'){try{return JSON.parse(a)}catch(e){return{}}}return a||{}};
+function turnInput(history){
+ const out=[];
+ for(const m of history){
+  if(m.e)continue;
+  if(m.r==='u'){out.push(userStep(m.t));continue}
+  if(m.r==='a'&&Array.isArray(m.steps))out.push(...m.steps);
+  else if(m.r==='a')out.push({type:'model_output',content:[{type:'text',text:m.t}]});
+ }
+ while(out.length&&out[0].type!=='user_input')out.shift();
+ return out;
+}
+async function askGemini(key,input,rag){
+ const r=await fetch('https://generativelanguage.googleapis.com/v1beta/interactions',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify({model:GEMINI_MODEL,store:false,input,system_instruction:ASYS+'\n\nسياق المستخدم الحالي:\n'+JSON.stringify(snap())+rag,tools:ATOOLS,generation_config:{max_output_tokens:1024}})});
+ const d=await r.json().catch(()=>({}));
+ const ge=d.error||(Array.isArray(d)&&d[0]&&d[0].error)||null;
+ if(!r.ok)throw new Error(String(ge?.message||ge||('خطأ '+r.status)));
+ if(ge)throw new Error(String(ge.message||ge));
+ return d;
+}
 const chatBox=()=>$('#msgs');
 const toLast=()=>{const e=chatBox();if(e)e.scrollTop=e.scrollHeight;else scrollTo(0,document.body.scrollHeight)};
 const openChat=k=>{ck=k;go('assistant');toLast()};
@@ -381,24 +402,27 @@ async function send(){
   if(text.replace(/^\/+/,'')==='clear'){S.chats[k]=[];showHelp=false;save();render();toLast();return}
   const H=S.chats[k]=S.chats[k]||[];
  H.push({r:'u',t:text});busyChat=true;render();toLast();
- let reply='',err='';
+ let reply='',err='',newSteps=[];
  try{
-  const cs=H.filter(m=>!m.e).slice(-20).map(m=>({role:m.r==='u'?'user':'model',parts:[{text:m.t}]}));
-  while(cs.length&&cs[0].role==='model')cs.shift();
+  const rag=await findChunks(text);
+  const input=turnInput(H.slice(-20));
+  const base=input.length;
   for(let i=0;i<6;i++){
-   const rag=await findChunks(text);
-   const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(key)}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({systemInstruction:{parts:[{text:ASYS+'\n\nسياق المستخدم الحالي:\n'+JSON.stringify(snap())+rag}]},contents:cs.slice(-20),tools:[ATOOLS],generationConfig:{temperature:.4,maxOutputTokens:1024}})});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(String(d.error?.message||d.error||('خطأ '+r.status)));const c=d.candidates?.[0]?.content;if(!c)throw new Error(String(d.error?.message||'لا يوجد رد من Gemini'));
-
-
-   cs.push(c);
-   const calls=(c.parts||[]).filter(p=>p.functionCall);
-   if(!calls.length){reply=(c.parts||[]).map(p=>p.text||'').join('').trim();break}
-   cs.push({role:'user',parts:calls.map(p=>({functionResponse:{name:p.functionCall.name,response:run(p.functionCall.name,p.functionCall.args||{})}}))});
-   save()
+   const d=await askGemini(key,input,rag);
+   const steps=Array.isArray(d.steps)?d.steps:[];
+   input.push(...steps);
+   const calls=steps.filter(s=>s.type==='function_call');
+   if(calls.length){
+    input.push(...calls.map(s=>({type:'function_result',name:s.name,call_id:s.id||s.call_id,result:[{type:'text',text:JSON.stringify(run(s.name,callArgs(s.arguments)))}]})));
+    save();continue
+   }
+   reply=steps.filter(s=>s.type==='model_output').map(s=>(s.content||[]).map(c=>c.text||'').join('')).join('\n').trim()||String(d.output_text||'').trim();
+   if(reply)break
   }
+  newSteps=input.slice(base)
  }catch(x){const m=String(x.message||x);err=/api[ _-]?key|invalid|unauthorized|permission/i.test(m)?'مفتاح Gemini غير صالح أو غير مفعّل. راجعه من «المزيد ← الحساب».':/quota|exhausted|rate|429/i.test(m)?'انتهت حصة مفتاحك المجانية أو كثّرت الطلبات. جرّب بعد قليل.':/network|fetch|failed/i.test(m)?'تعذّر الاتصال بـ Google. تأكد من الإنترنت ثم أعد المحاولة.':'تعذّر الاتصال بالمساعد: '+m}
  busyChat=false;
- H.push(err?{r:'a',t:err,e:1}:{r:'a',t:reply||'تم.'});
+ H.push(err?{r:'a',t:err,e:1}:{r:'a',t:reply||'تم.',steps:newSteps});
  if(H.length>60)H.splice(0,H.length-60);
  save();render();toLast()
 }
