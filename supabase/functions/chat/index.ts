@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM }] },
+          systemInstruction: { parts: [{ text: SYSTEM + '\n\nسياق المستخدم الحالي (بياناته وما يتذكره المساعد عنه):\n' + JSON.stringify(payload.context || {}) }] },
           contents: contents.slice(-20),
           tools: [TOOLS],
           generationConfig: { temperature: 0.4, maxOutputTokens: 1024 },

@@ -249,11 +249,11 @@ function run(n,a){
  }
  return{error:'أداة غير معروفة'}
 }
-const openChat=k=>{ck=k;go('assistant');scrollTo(0,document.body.scrollHeight)};
+const openChat=k=>{ck=k;go('assistant')};
 function vAssist(){
  const k=chatKey(),H=S.chats[k]||[];
  const chips=[['general','عام'],...S.subjects.map(s=>[s.id,s.name])].map(c=>`<button class="${c[0]===k?'on':''}" onclick="openChat('${c[0]}')">${esc(c[1])}</button>`).join('');
- const msgs=H.length?H.map(m=>`<div class="m ${m.r}">${esc(m.t)}</div>`).join(''):`<div class="bub">أهلاً! أنا مساعد ورق. اسألني عن جدولك وامتحاناتك، أو اطلب مني إضافة وتعديل وحذف المواد والمحاضرات والامتحانات والمهام بكلامك العادي. وسأتذكر ما تخبرني به عنك لأخصّص ردودي (${((S.profile&&S.profile.facts)||[]).length} معلومة محفوظة الآن).</div>`;
+ const msgs=H.length?H.map(m=>`<div class="m ${m.r}">${esc(m.t)}</div>`).join(''):`<div class="bub">أهلاً! أنا مساعد ورق. اسألني عن جدولك وامتحاناتك، أو اطلب مني إضافة وتعديل وحذف المواد والمحاضرات والامتحانات والمهام بكلامك العادي. وسأتذكر ما تخبرني به عنك لأخصّص ردودي.</div>`;
  return `<div class="chips">${chips}</div>${sb&&user?'':'<div class="bub">سجّل الدخول من «المزيد ← الحساب» لتستخدم المساعد.</div>'}<div>${msgs}${busyChat?'<div class="m a">…</div>':''}</div><div class="add"><input id="q" placeholder="اكتب رسالتك…" maxlength="2000" onkeydown="if(event.key===\'Enter\')send()"><button class="go" onclick="send()">إرسال</button></div>`
 }
 async function send(){
@@ -282,19 +282,7 @@ async function send(){
  if(H.length>60)H.splice(0,H.length-60);
  save();render();scrollTo(0,document.body.scrollHeight)
 }
-const vMore=()=>`<div class="seg">${[['exams','الامتحانات'],['tasks','المهام'],['memory','الذاكرة'],['account','الحساب']].map(m=>`<button class="${mt===m[0]?'on':''}" onclick="go('more','${m[0]}')">${m[1]}</button>`).join('')}</div>`+(mt==='exams'?vExams():mt==='tasks'?vTasks():mt==='memory'?vMemory():vAccount());
-/* ===== ذاكرة المساعد ===== */
-function addFact(){
- const e=$('#mf'),f=(e&&e.value||'').trim().slice(0,200);if(!f)return;
- S.profile=S.profile||{facts:[]};S.profile.facts=S.profile.facts||[];
- if(!S.profile.facts.some(x=>String(x).toLowerCase()===f.toLowerCase()))S.profile.facts.push(f);
- save();render()
-}
-function forgetFact(i){S.profile=S.profile||{facts:[]};S.profile.facts=S.profile.facts||[];S.profile.facts.splice(i,1);save();render()}
-function vMemory(){
- const F=(S.profile&&S.profile.facts)||[];
- return `<div class="bub">هذي المعلومات اللي المساعد يتذكرها عنك، ويستخدمها يخصّص ردوده تلقائياً.</div>`+(F.length?F.map((f,i)=>`<div class="row"><div class="b"><b>${esc(f)}</b></div><button class="x" aria-label="حذف" onclick="forgetFact(${i})">×</button></div>`).join(''):empty('ما عندي معلومات عنك بعد. قل للمساعد عن نفسك وسأتذكرها.'))+`<div class="add"><input id="mf" placeholder="معلومة تريد أن يتذكرها المساعد" maxlength="200" onkeydown="if(event.key==='Enter')addFact()"><button class="go" onclick="addFact()">إضافة</button></div>`
-}
+const vMore=()=>`<div class="seg">${[['exams','الامتحانات'],['tasks','المهام'],['account','الحساب']].map(m=>`<button class="${mt===m[0]?'on':''}" onclick="go('more','${m[0]}')">${m[1]}</button>`).join('')}</div>`+(mt==='exams'?vExams():mt==='tasks'?vTasks():vAccount());
 /* ===== الحساب والمزامنة ===== */
 const BASE=()=>({subjects:[],lectures:[],exams:[],tasks:[],files:[],chats:{},profile:{facts:[]}});
 const sb=(SUPABASE_URL&&SUPABASE_KEY&&window.supabase)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
