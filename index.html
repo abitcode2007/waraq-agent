@@ -3,9 +3,6 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="referrer" content="strict-origin-when-cross-origin">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
 <title>WARAQ مساعد ورق</title>
 <style>
 :root{--bg:#EDE8DE;--sf:#F8F5EE;--tx:#0F2D2A;--mu:#556661;--pr:#0F2D2A;--on:#EDE8DE;--se:#5F8F7E;--ac:#F29966;--bd:#d6cfc0;--dn:#b42318;--lg:#0F2D2A;--lp:#F8F5EE;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -55,10 +52,6 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--se);flex:none}
 .chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px}
 .chips button{white-space:nowrap;border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:999px;padding:6px 14px;font:inherit;cursor:pointer}
 .chips button.on{background:var(--pr);color:var(--on);border-color:var(--pr)}
-.chips button.slash{flex:none;padding:6px 10px;font-weight:700;color:var(--ac)}
-.hint{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:12px}
-.hint b{display:block;color:var(--ac);direction:ltr;text-align:start;font-size:.95rem}
-.hint small{color:var(--mu)}
 .m{max-width:85%;padding:9px 12px;border-radius:14px;margin-bottom:8px;white-space:pre-wrap;overflow-wrap:anywhere}
 .m.u{background:var(--pr);color:var(--on);margin-inline-end:auto}
 .m.a{background:var(--sf);border:1px solid var(--bd);margin-inline-start:auto}
@@ -76,7 +69,7 @@ nav button.on{color:var(--pr);border-color:var(--ac);font-weight:700}
 <div class="wrap" id="main"></div>
 <nav id="nav" aria-label="التنقل"></nav>
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9/dist/umd/supabase.js" integrity="sha384-6foGJ1oz/y3anEo0BXRtTgBK1GvpnR0GbJZb0ijG+nBAJ4rYT+VqlD/9e3CSiFIA" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.9/dist/umd/supabase.js"></script>
 <script>
 const CFG=window.WARAQ||{};
 const SUPABASE_URL=(CFG.url||'https://qilbqomdeximgdxwnxdy.supabase.co').trim();
@@ -86,11 +79,11 @@ const COLORS=['#2f6f62','#F29966','#7a6a4f','#3f6b8a','#a85a5a','#6b5b95','#5F8F
 const IC={home:'M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19a2 2 0 0 1 2-2h13',cal:'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4',chat:'M4 5h16v11H9l-5 4z',more:'M5 12h.01M12 12h.01M19 12h.01',spark:'M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z',doc:'M6 3h12v18H6zM9 8h6M9 12h6',chk:'M5 12l4 4 10-10'};
 const ic=(k,w)=>`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="${w||1.8}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${IC[k]}"/></svg>`;
 const logo=n=>`<svg viewBox="0 0 64 64" width="${n}" height="${n}" aria-hidden="true"><path d="M36 10l16 6v34l-16 4z" fill="var(--lp)" stroke="var(--bd)" stroke-width="2" stroke-linejoin="round"/><path d="M7 14l19 14v22L7 38z" fill="var(--lg)" stroke="var(--lg)" stroke-width="4" stroke-linejoin="round"/><path d="M28 18l16-6v36l-16 8z" fill="var(--se)" stroke="var(--se)" stroke-width="4" stroke-linejoin="round"/></svg>`;
-const NAV=[['home','الرئيسية','home'],['lectures','الجدول','cal'],['subjects','المواد','book'],['assistant','المساعد','chat'],['more','المزيد','more']];
+const NAV=[['home','الرئيسية','home'],['subjects','المواد','book'],['lectures','الجدول','cal'],['assistant','المساعد','chat'],['more','المزيد','more']];
 const TITLES={subjects:'المواد',lectures:'الجدول الدراسي',assistant:'المساعد الذكي',more:'المزيد'};
-let S={subjects:[],lectures:[],exams:[],tasks:[],files:[],chats:{},profile:{facts:[]}},tab='home',mt='exams',ed=null,fv=null,ready=false;
+let S={subjects:[],lectures:[],exams:[],tasks:[],files:[],chats:{}},tab='home',mt='exams',ed=null,fv=null,ready=false;
 try{const r=localStorage.getItem('planner_v1');if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
-S.chats=S.chats||{};S.files=S.files||[];S.profile=S.profile||{facts:[]};S.profile.facts=S.profile.facts||[];
+S.chats=S.chats||{};S.files=S.files||[];
 const persist=()=>{try{localStorage.setItem('planner_v1',JSON.stringify(S))}catch(e){}};
 const save=()=>{S._t=Date.now();persist();push()};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -117,6 +110,7 @@ function add(k){
 function dropSubject(id){
  const ps=S.files.filter(f=>f.subjectId===id).map(f=>f.path);
  if(ps.length&&sb)sb.storage.from('pdfs').remove(ps);
+ if(sb)sb.from('chunks').delete().eq('subject_id',id).then(()=>{});
  ['lectures','exams','tasks','files'].forEach(c=>S[c]=S[c].filter(x=>x.subjectId!==id));delete S.chats[id]
 }
 function del(k,id){
@@ -141,7 +135,7 @@ function vHome(){
  h+=card('more','tasks','chk','المهام والواجبات',`${ot} مهام مفتوحة`);
  h+=card('assistant','','chat','المساعد الذكي','اسأل وعدّل جدولك بالمحادثة')+'</div>';
  if(tl.length)h+=`<div class="sec">محاضرات اليوم</div>`+tl.map(lecRow).join('');
- return h+'<p class="note">بياناتك محفوظة على هذا الجهاز، وتُزامن مع حسابك فقط عند تسجيل الدخول.</p>'
+ return h+'<p class="note">البيانات محفوظة في متصفحك فقط على هذا الجهاز.</p>'
 }
 const cur=k=>ed&&ed.k===k?S[k].find(x=>x.id===ed.id):null;
 const btns=(k,l)=>cur(k)?`<button class="go" onclick="add('${k}')">حفظ التعديل</button><button class="go ghost" onclick="ed=null;render()">إلغاء</button>`:`<button class="go" onclick="add('${k}')">${l}</button>`;
@@ -149,16 +143,16 @@ const act=(k,id,x)=>`<div class="act">${x||''}<button onclick="edit('${k}','${id
 function edit(k,id){ed={k,id};fv=null;if(k==='subjects'||k==='lectures')tab=k;else{tab='more';mt=k}render();scrollTo(0,0)}
 function vLogin(){
  const st=`<p class="sec" id="st" role="status" style="text-align:center">${esc(msg)}</p>`;
- return `<div class="login"><div class="hero">${logo(64)}<div><div class="wm">WARAQ</div><div class="wa">مساعد ورق</div></div></div><p class="tag">سجّل الدخول لتبدأ</p>`+(sb?`<div class="add"><input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr" maxlength="254"><input id="pw" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="current-password" dir="ltr" maxlength="128" onkeydown="if(event.key==='Enter')auth('in')"><button class="go" onclick="auth('in')">تسجيل الدخول</button><button class="go ghost" onclick="auth('up')">إنشاء حساب</button></div>${st}`:`<div class="bub">الإعدادات ناقصة: ملف config.js غير موجود أو فارغ. أنشئه بجانب index.html وضع فيه رابط Supabase والمفتاح العام.</div>`)+'</div>'
+ return `<div class="login"><div class="hero">${logo(64)}<div><div class="wm">WARAQ</div><div class="wa">مساعد ورق</div></div></div><p class="tag">سجّل الدخول لتبدأ</p>`+(sb?`<div class="add"><input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr"><input id="pw" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="current-password" dir="ltr" onkeydown="if(event.key==='Enter')auth('in')"><button class="go" onclick="auth('in')">تسجيل الدخول</button><button class="go ghost" onclick="auth('up')">إنشاء حساب</button></div>${st}`:`<div class="bub">الإعدادات ناقصة: ملف config.js غير موجود أو فارغ. أنشئه بجانب index.html وضع فيه رابط Supabase والمفتاح العام.</div>`)+'</div>'
 }
 function vSubjects(){
  if(fv&&sub(fv))return vFiles();
  const it=cur('subjects')||{};
- return `<div class="add"><input id="f1" placeholder="اسم المادة" maxlength="80" value="${esc(it.name)}"><input id="f2" placeholder="اسم الدكتور (اختياري)" maxlength="80" value="${esc(it.doctor)}">${btns('subjects','إضافة المادة')}</div>`+(S.subjects.length?S.subjects.map(s=>`<div class="row" style="--c:${s.color}"><div class="b"><b>${esc(s.name)}</b><small>${esc(s.doctor)||'بدون دكتور'} — ${S.lectures.filter(l=>l.subjectId===s.id).length} محاضرات، ${S.exams.filter(e=>e.subjectId===s.id).length} امتحانات، ${S.tasks.filter(t=>t.subjectId===s.id&&!t.done).length} مهام مفتوحة</small>${act('subjects',s.id,`<button onclick="fv='${s.id}';render()">الملفات (${S.files.filter(f=>f.subjectId===s.id).length})</button><button onclick="openChat('${s.id}')">محادثة</button>`)}</div>${xb('subjects',s.id)}</div>`).join(''):empty('ما عندك مواد بعد. أضف أول مادة.'))
+ return `<div class="add"><input id="f1" placeholder="اسم المادة" value="${esc(it.name)}"><input id="f2" placeholder="اسم الدكتور (اختياري)" value="${esc(it.doctor)}">${btns('subjects','إضافة المادة')}</div>`+(S.subjects.length?S.subjects.map(s=>`<div class="row" style="--c:${s.color}"><div class="b"><b>${esc(s.name)}</b><small>${esc(s.doctor)||'بدون دكتور'} — ${S.lectures.filter(l=>l.subjectId===s.id).length} محاضرات، ${S.exams.filter(e=>e.subjectId===s.id).length} امتحانات، ${S.tasks.filter(t=>t.subjectId===s.id&&!t.done).length} مهام مفتوحة</small>${act('subjects',s.id,`<button onclick="fv='${s.id}';render()">الملفات (${S.files.filter(f=>f.subjectId===s.id).length})</button><button onclick="openChat('${s.id}')">محادثة</button>`)}</div>${xb('subjects',s.id)}</div>`).join(''):empty('ما عندك مواد بعد. أضف أول مادة.'))
 }
 function vFiles(){
  const s=sub(fv),F=S.files.filter(f=>f.subjectId===fv);
- return `<button class="back" onclick="fv=null;render()">← رجوع للمواد</button><h2>ملفات ${esc(s.name)}</h2><div class="add"><input id="pf" type="file" accept="application/pdf,.pdf" onchange="upl(this)"></div><p class="sec" id="fm" role="status">ملفات PDF فقط، وحتى 15MB للملف.</p>`+(F.length?F.map(f=>`<div class="row" style="--c:${s.color}"><div class="b"><b dir="auto">${esc(f.name)}</b><small>${(f.size/1048576).toFixed(1)} MB</small><div class="act"><button onclick="openF('${f.id}')">فتح</button></div></div><button class="x" aria-label="حذف" onclick="delF('${f.id}')">×</button></div>`).join(''):empty('ما رفعت ملفات لهذه المادة بعد.'))
+ return `<button class="back" onclick="fv=null;render()">← رجوع للمواد</button><h2>ملفات ${esc(s.name)}</h2><div class="add"><input id="pf" type="file" accept="application/pdf,.pdf" onchange="upl(this)"></div><p class="sec" id="fm" role="status">ملفات PDF فقط، وحتى 15MB للملف.</p>`+(F.length?F.map(f=>`<div class="row" style="--c:${s.color}"><div class="b"><b dir="auto">${esc(f.name)}</b><small>${(f.size/1048576).toFixed(1)} MB${ixLabel(f)}</small><div class="act"><button onclick="openF('${f.id}')">فتح</button><button onclick="reindex('${f.id}')">${f.ix==='ok'?'إعادة الفهرسة':'فهرسة'}</button></div></div><button class="x" aria-label="حذف" onclick="delF('${f.id}')">×</button></div>`).join(''):empty('ما رفعت ملفات لهذه المادة بعد.'))
 }
 const setFm=m=>{const e=$('#fm');if(e)e.textContent=m};
 async function upl(inp){
@@ -169,12 +163,81 @@ async function upl(inp){
  setFm('جارٍ الرفع…');
  const r=await sb.storage.from('pdfs').upload(path,f,{contentType:'application/pdf'});
  if(r.error)return setFm('تعذّر الرفع: '+r.error.message);
- S.files.push({id,subjectId:sid,name:f.name,size:f.size,path,at:Date.now()});save();render()
+ S.files.push({id,subjectId:sid,name:f.name,size:f.size,path,at:Date.now()});save();render();
+ try{indexFile(id,await f.arrayBuffer())}catch(x){setFm('تم الرفع، لكن تعذّرت قراءة الملف للفهرسة.')}
+}
+/* ===== فهرسة PDF للمساعد: استخراج النص ← تقطيع ← متجهات ← Supabase ===== */
+const PDFJS='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',PDFW='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const MAXCH=500,BATCH=25;
+let pdfP=null,idxId=null;
+const loadPdf=()=>pdfP||(pdfP=new Promise((ok,no)=>{const e=document.createElement('script');e.src=PDFJS;e.onload=()=>{pdfjsLib.GlobalWorkerOptions.workerSrc=PDFW;ok(pdfjsLib)};e.onerror=()=>{pdfP=null;no(new Error('تعذّر تحميل قارئ PDF'))};document.head.appendChild(e)}));
+const ixLabel=f=>idxId===f.id?' — جارٍ الفهرسة…':f.ix==='ok'?` — مفهرس للمساعد (${f.n} مقطع)`:f.ix==='scan'?' — PDF ممسوح (صور) لا يمكن قراءته':f.ix==='fail'?' — فشلت الفهرسة':' — غير مفهرس';
+async function pdfPages(buf,onp){
+ const L=await loadPdf(),doc=await L.getDocument({data:new Uint8Array(buf)}).promise,out=[];
+ for(let p=1;p<=doc.numPages;p++){
+  const tc=await(await doc.getPage(p)).getTextContent();let t='';
+  for(const it of tc.items)t+=it.str+(it.hasEOL?'\n':' ');
+  out.push(t.normalize('NFKC').replace(/[ \t]+/g,' ').replace(/\n\s*\n+/g,'\n').trim());
+  if(onp)onp(p,doc.numPages)
+ }
+ return out
+}
+function chunkPages(pages){
+ const out=[],MAX=900,OV=150;
+ pages.forEach((t,i)=>{
+  let a=0;if(t.length<30)return;
+  while(a<t.length){
+   let b=Math.min(a+MAX,t.length);
+   if(b<t.length){const sp=t.lastIndexOf(' ',b);if(sp>a+MAX*.6)b=sp}
+   const x=t.slice(a,b).trim();if(x.length>=30)out.push({page:i+1,text:x});
+   if(b>=t.length)break;a=b-OV
+  }
+ });
+ return out
+}
+async function embed(texts){
+ for(let a=0;;a++){
+  const r=await sb.functions.invoke('chat',{body:{mode:'embed',texts}}),d=r.data;
+  if(!r.error&&d&&Array.isArray(d.vectors)&&d.vectors.length===texts.length)return d.vectors;
+  if(a>=3)throw new Error(r.error?r.error.message:(d&&d.error)||'فشل التحويل');
+  await new Promise(k=>setTimeout(k,1500*(a+1)))
+ }
+}
+const mark=(id,ix,n)=>{const g=S.files.find(x=>x.id===id);if(g){g.ix=ix;g.n=n||0}};
+async function indexFile(id,buf){
+ const f=S.files.find(x=>x.id===id);if(!f||!sb||!user||idxId)return;
+ idxId=id;render();let end='';
+ try{
+  const pages=await pdfPages(buf,(p,n)=>setFm(`قراءة الصفحات ${p}/${n}…`));
+  const total=pages.reduce((n,t)=>n+t.length,0);
+  if(!pages.length||total/pages.length<40){mark(id,'scan');end='هذا الملف يبدو ممسوحاً (صور) ولا يحتوي نصاً، فالمساعد لا يستطيع قراءته.'}
+  else{
+   let ch=chunkPages(pages),cut=ch.length>MAXCH;ch=ch.slice(0,MAXCH);
+   await sb.from('chunks').delete().eq('file_id',id);
+   try{
+    for(let i=0;i<ch.length;i+=BATCH){
+     const part=ch.slice(i,i+BATCH),vec=await embed(part.map(c=>c.text));
+     const r=await sb.from('chunks').insert(part.map((c,j)=>({subject_id:f.subjectId,file_id:id,page:c.page,content:c.text,embedding:'['+vec[j].join(',')+']'})));
+     if(r.error)throw r.error;
+     setFm(`فهرسة ${Math.min(i+BATCH,ch.length)}/${ch.length}…`)
+    }
+   }catch(x){await sb.from('chunks').delete().eq('file_id',id);throw x}
+   mark(id,'ok',ch.length);end=`تمت الفهرسة: ${ch.length} مقطع من ${pages.length} صفحة.`+(cut?' تم الاكتفاء بأول '+MAXCH+' مقطع.':'')
+  }
+ }catch(x){mark(id,'fail');end='فشلت الفهرسة: '+(x&&x.message||x)}
+ idxId=null;save();render();setFm(end)
+}
+async function reindex(id){
+ const f=S.files.find(x=>x.id===id);if(!f||idxId||!sb)return;
+ setFm('جارٍ تنزيل الملف…');
+ const r=await sb.storage.from('pdfs').download(f.path);
+ if(r.error)return setFm('تعذّر تنزيل الملف: '+r.error.message);
+ indexFile(id,await r.data.arrayBuffer())
 }
 async function openF(id){
  const f=S.files.find(x=>x.id===id);if(!f)return;
  const w=window.open('','_blank');
- const r=await sb.storage.from('pdfs').createSignedUrl(f.path,300);
+ const r=await sb.storage.from('pdfs').createSignedUrl(f.path,3600);
  if(r.error){if(w)w.close();return setFm('تعذّر فتح الملف: '+r.error.message)}
  if(w)w.location=r.data.signedUrl;else location.href=r.data.signedUrl
 }
@@ -182,39 +245,41 @@ async function delF(id){
  const f=S.files.find(x=>x.id===id);if(!f||!confirm('حذف الملف «'+f.name+'»؟'))return;
  const r=await sb.storage.from('pdfs').remove([f.path]);
  if(r.error)return setFm('تعذّر الحذف: '+r.error.message);
+ await sb.from('chunks').delete().eq('file_id',id);
  S.files=S.files.filter(x=>x.id!==id);save();render()
 }
 function vLectures(){
  if(!S.subjects.length)return needSub;
  const it=cur('lectures')||{};
- let h=`<div class="add"><select id="f1">${opts(0,it.subjectId)}</select><select id="f2">${DAYS.map((d,i)=>`<option value="${i}"${it.day===i?' selected':''}>${d}</option>`).join('')}</select><input id="f3" type="time" aria-label="من" value="${esc(it.start)}"><input id="f4" type="time" aria-label="إلى" value="${esc(it.end)}"><input id="f5" placeholder="القاعة" maxlength="40" value="${esc(it.room)}">${btns('lectures','إضافة المحاضرة')}</div>`,any=false;
+ let h=`<div class="add"><select id="f1">${opts(0,it.subjectId)}</select><select id="f2">${DAYS.map((d,i)=>`<option value="${i}"${it.day===i?' selected':''}>${d}</option>`).join('')}</select><input id="f3" type="time" aria-label="من" value="${esc(it.start)}"><input id="f4" type="time" aria-label="إلى" value="${esc(it.end)}"><input id="f5" placeholder="القاعة" value="${esc(it.room)}">${btns('lectures','إضافة المحاضرة')}</div>`,any=false;
  DAYS.forEach((d,i)=>{const L=S.lectures.filter(l=>l.day===i).sort(byStart);if(!L.length)return;any=true;h+=`<div class="day">${d}</div>`+L.map(lecRow).join('')});
  return h+(any?'':empty('ما أضفت محاضرات بعد.'))
 }
 function vExams(){
  if(!S.subjects.length)return needSub;
  const it=cur('exams')||{};
- const h=`<div class="add"><select id="f1">${opts(0,it.subjectId)}</select><input id="f2" type="date" aria-label="التاريخ" value="${esc(it.date)}"><input id="f3" type="time" aria-label="الوقت" value="${esc(it.time)}"><input id="f4" placeholder="النوع (شهري، نهائي…)" maxlength="60" value="${esc(it.kind)}">${btns('exams','إضافة الامتحان')}</div>`;
+ const h=`<div class="add"><select id="f1">${opts(0,it.subjectId)}</select><input id="f2" type="date" aria-label="التاريخ" value="${esc(it.date)}"><input id="f3" type="time" aria-label="الوقت" value="${esc(it.time)}"><input id="f4" placeholder="النوع (شهري، نهائي…)" value="${esc(it.kind)}">${btns('exams','إضافة الامتحان')}</div>`;
  return h+(S.exams.length?[...S.exams].sort((a,b)=>a.date.localeCompare(b.date)).map(e=>{const d=left(e.date);
   const c=d<0?'<div class="cd">—<small>انتهى</small></div>':d===0?'<div class="cd">اليوم</div>':`<div class="cd">${d}<small>يوم</small></div>`;
   return `<div class="row" style="--c:${scol(e.subjectId)}">${c}<div class="b"><b>${sname(e.subjectId)}${e.kind?' — '+esc(e.kind):''}</b><small>${esc(e.date)}${e.time?' — '+esc(e.time):''}</small>${act('exams',e.id)}</div>${xb('exams',e.id)}</div>`}).join(''):empty('ما أضفت امتحانات بعد.'))
 }
 function vTasks(){
  const it=cur('tasks')||{};
- const h=`<div class="add"><select id="f1">${opts(1,it.subjectId)}</select><input id="f2" placeholder="المهمة أو الواجب" maxlength="120" value="${esc(it.title)}"><input id="f3" type="date" aria-label="الموعد" value="${esc(it.due)}">${btns('tasks','إضافة المهمة')}</div>`;
+ const h=`<div class="add"><select id="f1">${opts(1,it.subjectId)}</select><input id="f2" placeholder="المهمة أو الواجب" value="${esc(it.title)}"><input id="f3" type="date" aria-label="الموعد" value="${esc(it.due)}">${btns('tasks','إضافة المهمة')}</div>`;
  const T=[...S.tasks].sort((a,b)=>(a.done-b.done)||(a.due||'9').localeCompare(b.due||'9'));
  return h+(T.length?T.map(t=>`<div class="row${t.done?' done':''}" style="--c:${scol(t.subjectId)}"><input type="checkbox" aria-label="تم" ${t.done?'checked':''} onchange="tog('${t.id}')"><div class="b"><b>${esc(t.title)}</b><small>${sname(t.subjectId)}${t.due?' — '+esc(t.due):''}</small>${act('tasks',t.id)}</div>${xb('tasks',t.id)}</div>`).join(''):empty('ما عندك مهام. استمتع!'))
 }
 /* ===== المساعد: Gemini عبر Edge Function باسم chat ===== */
-let ck='general',busyChat=false,showHelp=false;
+let ck='general',busyChat=false;
+const hasIdx=()=>S.files.some(f=>f.n>0&&(chatKey()==='general'||f.subjectId===chatKey()));
 const chatKey=()=>ck==='general'||sub(ck)?ck:'general';
 const rn=id=>sub(id)?sub(id).name:'';
 const localDay=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
-const snap=()=>({today:localDay(),weekday:DAYS[(new Date().getDay()+1)%7],focus:chatKey()!=='general'?rn(chatKey()):'',profile:(S.profile&&S.profile.facts)||[],data:{
+const snap=()=>({today:localDay(),weekday:DAYS[(new Date().getDay()+1)%7],focus:chatKey()!=='general'?rn(chatKey()):'',focusId:chatKey()!=='general'?chatKey():'',profile:{facts:(S.profile&&S.profile.facts)||[]},data:{
  subjects:S.subjects.map(s=>({id:s.id,name:s.name,doctor:s.doctor})),
  lectures:S.lectures.map(l=>({id:l.id,subject:rn(l.subjectId),day:DAYS[l.day],start:l.start,end:l.end,room:l.room})),
  exams:S.exams.map(e=>({id:e.id,subject:rn(e.subjectId),date:e.date,time:e.time,exam_type:e.kind})),
- tasks:S.tasks.map(t=>({id:t.id,subject:rn(t.subjectId),title:t.title,due:t.due,done:t.done})),files:S.files.map(f=>({subject:rn(f.subjectId),name:f.name}))}});
+ tasks:S.tasks.map(t=>({id:t.id,subject:rn(t.subjectId),title:t.title,due:t.due,done:t.done})),files:S.files.map(f=>({id:f.id,subject:rn(f.subjectId),name:f.name}))}});
 const findSub=n=>{n=(n||'').trim();return n&&(S.subjects.find(s=>s.name===n)||S.subjects.find(s=>s.name.includes(n)||n.includes(s.name)))};
 const TM=/^([01]\d|2[0-3]):[0-5]\d$/,DT=/^\d{4}-\d{2}-\d{2}$/;
 const COL={subject:'subjects',lecture:'lectures',exam:'exams',task:'tasks'};
@@ -240,43 +305,33 @@ function run(n,a){
   if(typeof a.done==='boolean')up.done=a.done;
   Object.assign(it,up);return{ok:true}
  }
- if(n==='remember'){
-  const f=String(a.fact||'').trim().slice(0,200);if(!f)return{error:'المعلومة فارغة'};
-  S.profile=S.profile||{facts:[]};S.profile.facts=S.profile.facts||[];
-  if(S.profile.facts.some(x=>String(x).toLowerCase()===f.toLowerCase()))return{ok:true,note:'معلومة محفوظة مسبقاً'};
-  S.profile.facts.push(f);if(S.profile.facts.length>30)S.profile.facts.shift();return{ok:true}
- }
- if(n==='forget'){
-  S.profile=S.profile||{facts:[]};S.profile.facts=S.profile.facts||[];
-  const f=String(a.fact||'').trim().toLowerCase();const i=S.profile.facts.findIndex(x=>String(x).toLowerCase()===f);
-  if(i<0)return{error:'ما لقيت هذه المعلومة'};S.profile.facts.splice(i,1);return{ok:true}
+ if(n==='remember'||n==='forget'){
+  const t=String(a.fact||'').trim().slice(0,200);if(!t)return{error:'ينقص: fact'};
+  const P=S.profile=S.profile||{facts:[]};
+  if(n==='remember'){if(!P.facts.includes(t)){P.facts.push(t);if(P.facts.length>40)P.facts.shift()}return{ok:true}}
+  const k=P.facts.findIndex(x=>x===t||x.includes(t)||t.includes(x));if(k<0)return{error:'المعلومة غير محفوظة'};P.facts.splice(k,1);return{ok:true}
  }
  return{error:'أداة غير معروفة'}
 }
 const openChat=k=>{ck=k;go('assistant');scrollTo(0,document.body.scrollHeight)};
-function toggleHelp(){showHelp=!showHelp;render()}
-function useCmd(){showHelp=false;render();const e=$('#q');if(e){e.value='/clear';e.focus()}}
 function vAssist(){
  const k=chatKey(),H=S.chats[k]||[];
- const chips=[['general','عام'],...S.subjects.map(s=>[s.id,s.name])].map(c=>`<button class="${c[0]===k?'on':''}" onclick="openChat('${c[0]}')">${esc(c[1])}</button>`).join('')+`<button class="slash${showHelp?' on':''}" onclick="toggleHelp()" aria-label="الأوامر">/</button>`;
-  const help=showHelp?`<div class="hint"><b dir="ltr">/clear</b><small>يمسح كل رسائل هذه المحادثة فقط، ولا يمكن التراجع. <button class="back" onclick="useCmd()">إدراجه</button></small></div>`:'';
- const msgs=H.length?H.map(m=>`<div class="m ${m.r}">${esc(m.t)}</div>`).join(''):`<div class="bub">أهلاً! أنا مساعد ورق. اسألني عن جدولك وامتحاناتك، أو اطلب مني إضافة وتعديل وحذف المواد والمحاضرات والامتحانات والمهام بكلامك العادي. وسأتذكر ما تخبرني به عنك لأخصّص ردودي.</div>`;
- return `<div class="chips">${chips}</div>${help}${sb&&user?'':'<div class="bub">سجّل الدخول من «المزيد ← الحساب» لتستخدم المساعد.</div>'}<div>${msgs}${busyChat?'<div class="m a">…</div>':''}</div><div class="add"><input id="q" placeholder="اكتب رسالتك…" maxlength="2000" onkeydown="if(event.key===\'Enter\')send()"><button class="go" onclick="send()">إرسال</button></div>`
+ const chips=[['general','عام'],...S.subjects.map(s=>[s.id,s.name])].map(c=>`<button class="${c[0]===k?'on':''}" onclick="openChat('${c[0]}')">${esc(c[1])}</button>`).join('');
+ const msgs=H.length?H.map(m=>`<div class="m ${m.r}">${esc(m.t)}</div>`).join(''):`<div class="bub">أهلاً! أنا مساعد ورق. اسألني عن جدولك وامتحاناتك، أو اطلب مني إضافة وتعديل وحذف المواد والمحاضرات والامتحانات والمهام بكلامك العادي.</div>`;
+ return `<div class="chips">${chips}</div>${sb&&user?'':'<div class="bub">سجّل الدخول من «المزيد ← الحساب» لتستخدم المساعد.</div>'}<div>${msgs}${busyChat?'<div class="m a">…</div>':''}</div><div class="add"><input id="q" placeholder="اكتب رسالتك…" onkeydown="if(event.key===\'Enter\')send()"><button class="go" onclick="send()">إرسال</button></div>`
 }
 async function send(){
  const inp=$('#q'),text=(inp&&inp.value||'').trim();
  if(!text||busyChat)return;
  if(!sb||!user)return go('more','account');
- const k=chatKey();
-  if(text.replace(/^\/+/,'')==='clear'){S.chats[k]=[];showHelp=false;save();render();scrollTo(0,0);return}
-  const H=S.chats[k]=S.chats[k]||[];
+ const k=chatKey(),H=S.chats[k]=S.chats[k]||[];
  H.push({r:'u',t:text});busyChat=true;render();scrollTo(0,document.body.scrollHeight);
  let reply='',err='';
  try{
   const cs=H.filter(m=>!m.e).slice(-20).map(m=>({role:m.r==='u'?'user':'model',parts:[{text:m.t}]}));
   while(cs.length&&cs[0].role==='model')cs.shift();
   for(let i=0;i<6;i++){
-   const r=await sb.functions.invoke('chat',{body:{contents:cs,context:snap()}});
+   const r=await sb.functions.invoke('chat',{body:{contents:cs,context:snap(),rag:hasIdx()}});
    if(r.error||!r.data)throw new Error(r.error?r.error.message:'لا يوجد رد');
    if(r.data.error)throw new Error(r.data.error);
    const c=r.data.content;cs.push(c);
@@ -293,17 +348,17 @@ async function send(){
 }
 const vMore=()=>`<div class="seg">${[['exams','الامتحانات'],['tasks','المهام'],['account','الحساب']].map(m=>`<button class="${mt===m[0]?'on':''}" onclick="go('more','${m[0]}')">${m[1]}</button>`).join('')}</div>`+(mt==='exams'?vExams():mt==='tasks'?vTasks():vAccount());
 /* ===== الحساب والمزامنة ===== */
-const BASE=()=>({subjects:[],lectures:[],exams:[],tasks:[],files:[],chats:{},profile:{facts:[]}});
-const sb=(SUPABASE_URL&&SUPABASE_KEY&&window.supabase)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{flowType:'pkce',persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null;
+const BASE=()=>({subjects:[],lectures:[],exams:[],tasks:[],files:[],chats:{}});
+const sb=(SUPABASE_URL&&SUPABASE_KEY&&window.supabase)?supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null;
 let user=null,msg='',timer=null;
 const setMsg=m=>{msg=m;const e=$('#st');if(e)e.textContent=m};
 const has=o=>['subjects','lectures','exams','tasks'].some(k=>(o[k]||[]).length);
-function merge(a,b){const o={subjects:[],lectures:[],exams:[],tasks:[],files:[]};for(const k in o){const ids=new Set((a[k]||[]).map(x=>x.id));o[k]=[...(a[k]||[]),...(b[k]||[]).filter(x=>!ids.has(x.id))]}const fa=(a.profile&&a.profile.facts)||[],fb=(b.profile&&b.profile.facts)||[];o.profile={facts:[...fa,...fb.filter(x=>!fa.some(y=>String(y).toLowerCase()===String(x).toLowerCase()))]};return o}
+function merge(a,b){const o={subjects:[],lectures:[],exams:[],tasks:[],files:[]};for(const k in o){const ids=new Set((a[k]||[]).map(x=>x.id));o[k]=[...(a[k]||[]),...(b[k]||[]).filter(x=>!ids.has(x.id))]}return o}
 function vAccount(){
  if(!sb)return `<div class="bub">تسجيل الدخول غير مفعّل بعد. ضع رابط مشروع Supabase والمفتاح العام في أول السكربت (SUPABASE_URL و SUPABASE_KEY) ثم ارفع الصفحة على استضافتك.</div>`;
  const st=`<p class="sec" id="st" role="status">${esc(msg)}</p>`;
  if(user)return `<div class="bub">مسجّل بحساب:<br><b>${esc(user.email)}</b><br><small class="sec">عند تسجيل الخروج تُمسح بيانات هذا الجهاز وتبقى محفوظة في حسابك.</small></div><div class="add"><button class="go" onclick="pull()">مزامنة الآن</button><button class="go" onclick="logout()">تسجيل الخروج</button></div>${st}`;
- return `<div class="add"><input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr" maxlength="254"><input id="pw" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="current-password" dir="ltr" maxlength="128"><button class="go" onclick="auth('in')">تسجيل الدخول</button><button class="go" onclick="auth('up')">إنشاء حساب</button></div>${st}`;
+ return `<div class="add"><input id="em" type="email" placeholder="البريد الإلكتروني" autocomplete="email" dir="ltr"><input id="pw" type="password" placeholder="كلمة المرور (6 أحرف على الأقل)" autocomplete="current-password" dir="ltr"><button class="go" onclick="auth('in')">تسجيل الدخول</button><button class="go" onclick="auth('up')">إنشاء حساب</button></div>${st}`;
 }
 async function auth(k){
  const email=v('em').trim(),password=v('pw');
@@ -326,9 +381,7 @@ async function pull(){
  if(r.error)return setMsg('تعذّرت المزامنة: '+r.error.message);
  const rd=r.data&&r.data.data;
  if(!rd){S._u=user.id;persist();return upload()}
-  // لا تدمج أبداً بيانات حساب سابق في حساب جديد على نفس الجهاز
-  if(S._u&&S._u!==user.id){S=Object.assign(BASE(),rd,{_u:user.id});persist();render();return setMsg('تم تحميل بيانات حسابك. لم تُدمج بيانات حساب آخر.')}
- if(!S._u&&has(S)){S=Object.assign(BASE(),merge(rd,S),{chats:Object.assign({},rd.chats,S.chats),_u:user.id});save();return setMsg('تم دمج بيانات هذا الجهاز مع حسابك.')}
+ if(S._u!==user.id&&has(S)){S=Object.assign(BASE(),merge(rd,S),{chats:Object.assign({},rd.chats,S.chats),profile:{facts:[...new Set([...((rd.profile||{}).facts||[]),...((S.profile||{}).facts||[])])]},_u:user.id});save();return setMsg('تم دمج بيانات هذا الجهاز مع حسابك.')}
  const rt=rd._t||0,lt=S._t||0;
  if(rt>lt||S._u!==user.id){S=Object.assign(BASE(),rd,{_u:user.id});persist();render();setMsg('تمت المزامنة.')}
  else if(lt>rt)upload();
