@@ -55,6 +55,10 @@ input[type=checkbox]{width:22px;height:22px;accent-color:var(--se);flex:none}
 .chips{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px}
 .chips button{white-space:nowrap;border:1px solid var(--bd);background:var(--sf);color:var(--tx);border-radius:999px;padding:6px 14px;font:inherit;cursor:pointer}
 .chips button.on{background:var(--pr);color:var(--on);border-color:var(--pr)}
+.chips button.slash{flex:none;padding:6px 10px;font-weight:700;color:var(--ac)}
+.hint{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:12px}
+.hint b{display:block;color:var(--ac);direction:ltr;text-align:start;font-size:.95rem}
+.hint small{color:var(--mu)}
 .m{max-width:85%;padding:9px 12px;border-radius:14px;margin-bottom:8px;white-space:pre-wrap;overflow-wrap:anywhere}
 .m.u{background:var(--pr);color:var(--on);margin-inline-end:auto}
 .m.a{background:var(--sf);border:1px solid var(--bd);margin-inline-start:auto}
@@ -202,7 +206,7 @@ function vTasks(){
  return h+(T.length?T.map(t=>`<div class="row${t.done?' done':''}" style="--c:${scol(t.subjectId)}"><input type="checkbox" aria-label="تم" ${t.done?'checked':''} onchange="tog('${t.id}')"><div class="b"><b>${esc(t.title)}</b><small>${sname(t.subjectId)}${t.due?' — '+esc(t.due):''}</small>${act('tasks',t.id)}</div>${xb('tasks',t.id)}</div>`).join(''):empty('ما عندك مهام. استمتع!'))
 }
 /* ===== المساعد: Gemini عبر Edge Function باسم chat ===== */
-let ck='general',busyChat=false;
+let ck='general',busyChat=false,showHelp=false;
 const chatKey=()=>ck==='general'||sub(ck)?ck:'general';
 const rn=id=>sub(id)?sub(id).name:'';
 const localDay=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10);
@@ -249,18 +253,23 @@ function run(n,a){
  }
  return{error:'أداة غير معروفة'}
 }
-const openChat=k=>{ck=k;go('assistant')};
+const openChat=k=>{ck=k;go('assistant');scrollTo(0,document.body.scrollHeight)};
+function toggleHelp(){showHelp=!showHelp;render()}
+function useCmd(){showHelp=false;render();const e=$('#q');if(e){e.value='/clear';e.focus()}}
 function vAssist(){
  const k=chatKey(),H=S.chats[k]||[];
- const chips=[['general','عام'],...S.subjects.map(s=>[s.id,s.name])].map(c=>`<button class="${c[0]===k?'on':''}" onclick="openChat('${c[0]}')">${esc(c[1])}</button>`).join('');
+ const chips=[['general','عام'],...S.subjects.map(s=>[s.id,s.name])].map(c=>`<button class="${c[0]===k?'on':''}" onclick="openChat('${c[0]}')">${esc(c[1])}</button>`).join('')+`<button class="slash${showHelp?' on':''}" onclick="toggleHelp()" aria-label="الأوامر">/</button>`;
+  const help=showHelp?`<div class="hint"><b dir="ltr">/clear</b><small>يمسح كل رسائل هذه المحادثة فقط، ولا يمكن التراجع. <button class="back" onclick="useCmd()">إدراجه</button></small></div>`:'';
  const msgs=H.length?H.map(m=>`<div class="m ${m.r}">${esc(m.t)}</div>`).join(''):`<div class="bub">أهلاً! أنا مساعد ورق. اسألني عن جدولك وامتحاناتك، أو اطلب مني إضافة وتعديل وحذف المواد والمحاضرات والامتحانات والمهام بكلامك العادي. وسأتذكر ما تخبرني به عنك لأخصّص ردودي.</div>`;
- return `<div class="chips">${chips}</div>${sb&&user?'':'<div class="bub">سجّل الدخول من «المزيد ← الحساب» لتستخدم المساعد.</div>'}<div>${msgs}${busyChat?'<div class="m a">…</div>':''}</div><div class="add"><input id="q" placeholder="اكتب رسالتك…" maxlength="2000" onkeydown="if(event.key===\'Enter\')send()"><button class="go" onclick="send()">إرسال</button></div>`
+ return `<div class="chips">${chips}</div>${help}${sb&&user?'':'<div class="bub">سجّل الدخول من «المزيد ← الحساب» لتستخدم المساعد.</div>'}<div>${msgs}${busyChat?'<div class="m a">…</div>':''}</div><div class="add"><input id="q" placeholder="اكتب رسالتك…" maxlength="2000" onkeydown="if(event.key===\'Enter\')send()"><button class="go" onclick="send()">إرسال</button></div>`
 }
 async function send(){
  const inp=$('#q'),text=(inp&&inp.value||'').trim();
  if(!text||busyChat)return;
  if(!sb||!user)return go('more','account');
- const k=chatKey(),H=S.chats[k]=S.chats[k]||[];
+ const k=chatKey();
+  if(text.replace(/^\/+/,'')==='clear'){S.chats[k]=[];showHelp=false;save();render();scrollTo(0,0);return}
+  const H=S.chats[k]=S.chats[k]||[];
  H.push({r:'u',t:text});busyChat=true;render();scrollTo(0,document.body.scrollHeight);
  let reply='',err='';
  try{
